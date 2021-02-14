@@ -1,0 +1,15 @@
+﻿<Window x:Class="DDR4XMPEditor.Pages.ShellView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DDR4XMPEditor.Pages"
+        xmlns:s="https://github.com/canton7/Stylet"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance local:ShellViewModel}"
+        Title="DDR4 XMP Editor v0.1.0" Height="620" Width="360">
+    <StackPanel>
+        <ContentControl s:View.Model="{Binding MenuBar}"/>
+        <ContentControl s:View.Model="{Binding Editor}"/>
+    </StackPanel>
+</Window>

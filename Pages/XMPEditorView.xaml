@@ -1,0 +1,225 @@
+﻿<UserControl x:Class="DDR4XMPEditor.Pages.XMPEditorView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DDR4XMPEditor.Pages"
+      xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+      mc:Ignorable="d" 
+      d:DesignHeight="650" d:DesignWidth="360" IsEnabled="{Binding IsEnabled}">
+
+    <UserControl.Resources>
+        <local:TicksToTimeConverter x:Key="TicksToTimeConverter"/>
+    </UserControl.Resources>
+    
+    <StackPanel>
+        <GroupBox Header="Frequency and Voltage">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="Frequency:"/>
+                <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" Value="{Binding Profile.SDRAMCycleTicks}" Minimum="0"/>
+                <TextBox Grid.Row="0" Grid.Column="2" IsReadOnly="True" 
+                         Text="{Binding SDRAMCycleTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
+                <TextBox Grid.Row="0" Grid.Column="3" IsReadOnly="True" 
+                         Text="{Binding Frequency, StringFormat={}{0:F2}MHz, Mode=OneWay}"/>
+
+                <Label Grid.Row="1" Grid.Column="0" Content="Frequency Offset (ps):"/>
+                <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Minimum="-127" Maximum="127"
+                                    Value="{Binding Profile.SDRAMCycleTimeFC}"/>
+
+                <Label Grid.Row="2" Grid.Column="0" Content="Voltage:"/>
+                <xctk:IntegerUpDown Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Minimum="0" Maximum="227"
+                                    Value="{Binding Profile.Voltage}"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="Supported CAS Latencies">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <CheckBox Grid.Row="0" Grid.Column="0" Content="7" IsChecked="{Binding CLSupported[7]}"/>
+                <CheckBox Grid.Row="0" Grid.Column="1" Content="8" IsChecked="{Binding CLSupported[8]}"/>
+                <CheckBox Grid.Row="0" Grid.Column="2" Content="9" IsChecked="{Binding CLSupported[9]}"/>
+                <CheckBox Grid.Row="0" Grid.Column="3" Content="10" IsChecked="{Binding CLSupported[10]}"/>
+                <CheckBox Grid.Row="0" Grid.Column="4" Content="11" IsChecked="{Binding CLSupported[11]}"/>
+                <CheckBox Grid.Row="0" Grid.Column="5" Content="12" IsChecked="{Binding CLSupported[12]}"/>
+                
+                <CheckBox Grid.Row="1" Grid.Column="0" Content="13" IsChecked="{Binding CLSupported[13]}"/>
+                <CheckBox Grid.Row="1" Grid.Column="1" Content="14" IsChecked="{Binding CLSupported[14]}"/>
+                <CheckBox Grid.Row="1" Grid.Column="2" Content="15" IsChecked="{Binding CLSupported[15]}"/>
+                <CheckBox Grid.Row="1" Grid.Column="3" Content="16" IsChecked="{Binding CLSupported[16]}"/>
+                <CheckBox Grid.Row="1" Grid.Column="4" Content="17" IsChecked="{Binding CLSupported[17]}"/>
+                <CheckBox Grid.Row="1" Grid.Column="5" Content="18" IsChecked="{Binding CLSupported[18]}"/>
+
+                <CheckBox Grid.Row="2" Grid.Column="0" Content="19" IsChecked="{Binding CLSupported[19]}"/>
+                <CheckBox Grid.Row="2" Grid.Column="1" Content="20" IsChecked="{Binding CLSupported[20]}"/>
+                <CheckBox Grid.Row="2" Grid.Column="2" Content="21" IsChecked="{Binding CLSupported[21]}"/>
+                <CheckBox Grid.Row="2" Grid.Column="3" Content="22" IsChecked="{Binding CLSupported[22]}"/>
+                <CheckBox Grid.Row="2" Grid.Column="4" Content="23" IsChecked="{Binding CLSupported[23]}"/>
+                <CheckBox Grid.Row="2" Grid.Column="5" Content="24" IsChecked="{Binding CLSupported[24]}"/>
+
+                <CheckBox Grid.Row="3" Grid.Column="0" Content="25" IsChecked="{Binding CLSupported[25]}"/>
+                <CheckBox Grid.Row="3" Grid.Column="1" Content="26" IsChecked="{Binding CLSupported[26]}"/>
+                <CheckBox Grid.Row="3" Grid.Column="2" Content="27" IsChecked="{Binding CLSupported[27]}"/>
+                <CheckBox Grid.Row="3" Grid.Column="3" Content="28" IsChecked="{Binding CLSupported[28]}"/>
+                <CheckBox Grid.Row="3" Grid.Column="4" Content="29" IsChecked="{Binding CLSupported[29]}"/>
+                <CheckBox Grid.Row="3" Grid.Column="5" Content="30" IsChecked="{Binding CLSupported[30]}"/>
+            </Grid>
+        </GroupBox>
+        
+        <GroupBox Header="Timings">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="Name" FontWeight="Bold"/>
+                <Label Grid.Row="0" Grid.Column="1" Content="Value" FontWeight="Bold"/>
+                <Label Grid.Row="0" Grid.Column="2" Content="Offset (ps)" FontWeight="Bold"/>
+                <Label Grid.Row="0" Grid.Column="3" Content="Time (ns)" FontWeight="Bold"/>
+                <Label Grid.Row="0" Grid.Column="4" Content="Ticks" FontWeight="Bold"/>
+
+                <Label Grid.Row="1" Grid.Column="0" Content="tCL:" FontStyle="Normal"/>
+                <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Profile.CLTicks}" Minimum="0" 
+                                    Maximum="255"/>
+                <xctk:IntegerUpDown Grid.Row="1" Grid.Column="2" Value="{Binding Profile.CLFC}" Minimum="-127"
+                                    Maximum="127"/>
+                <TextBox Grid.Row="1" Grid.Column="3" IsReadOnly="True"
+                         Text="{Binding tCLTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
+                <TextBox Grid.Row="1" Grid.Column="4" IsReadOnly="True" Text="{Binding tCL, Mode=OneWay}"/>
+
+                <Label Grid.Row="2" Grid.Column="0" Content="tRCD:"/>
+                <xctk:IntegerUpDown Grid.Row="2" Grid.Column="1" Value="{Binding Profile.RCDTicks}" Minimum="0"
+                                    Maximum="255"/>
+                <xctk:IntegerUpDown Grid.Row="2" Grid.Column="2" Value="{Binding Profile.RCDFC}" Minimum="-127"
+                                    Maximum="127"/>
+                <TextBox Grid.Row="2" Grid.Column="3" IsReadOnly="True"
+                         Text="{Binding tRCDTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
+                <TextBox Grid.Row="2" Grid.Column="4" IsReadOnly="True" Text="{Binding tRCD, Mode=OneWay}"/>
+                
+                <Label Grid.Row="3" Grid.Column="0" Content="tRP:"/>
+                <xctk:IntegerUpDown Grid.Row="3" Grid.Column="1" Value="{Binding Profile.RPTicks}" Minimum="0"
+                                    Maximum="255"/>
+                <xctk:IntegerUpDown Grid.Row="3" Grid.Column="2" Value="{Binding Profile.RPFC}" Minimum="-127"
+                                    Maximum="127"/>
+                <TextBox Grid.Row="3" Grid.Column="3" IsReadOnly="True"
+                         Text="{Binding tRPTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
+                <TextBox Grid.Row="3" Grid.Column="4" IsReadOnly="True" Text="{Binding tRP, Mode=OneWay}"/>
+
+                <Label Grid.Row="4" Grid.Column="0" Content="tRAS:"/>
+                <xctk:IntegerUpDown Grid.Row="4" Grid.Column="1" Value="{Binding Profile.RASTicks}" Minimum="0"
+                                    Maximum="4095"/>
+                <xctk:IntegerUpDown Grid.Row="4" Grid.Column="2" IsEnabled="False"/>
+                <TextBox Grid.Row="4" Grid.Column="3" IsReadOnly="True"
+                         Text="{Binding Profile.RASTicks, StringFormat={}{0:F3}ns, 
+                                Converter={StaticResource TicksToTimeConverter}}"/>
+                <TextBox Grid.Row="4" Grid.Column="4" IsReadOnly="True" Text="{Binding tRAS, Mode=OneWay}"/>
+
+                <Label Grid.Row="5" Grid.Column="0" Content="tRC:"/>
+                <xctk:IntegerUpDown Grid.Row="5" Grid.Column="1" Value="{Binding Profile.RCTicks}" Minimum="0"
+                                    Maximum="4095"/>
+                <xctk:IntegerUpDown Grid.Row="5" Grid.Column="2" Value="{Binding Profile.RCFC}" Minimum="-127"
+                                    Maximum="127"/>
+                <TextBox Grid.Row="5" Grid.Column="3" IsReadOnly="True"
+                         Text="{Binding tRCTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
+                <TextBox Grid.Row="5" Grid.Column="4" IsReadOnly="True" Text="{Binding tRC, Mode=OneWay}"/>
+
+                <Label Grid.Row="6" Grid.Column="0" Content="tRFC:"/>
+                <xctk:IntegerUpDown Grid.Row="6" Grid.Column="1" Value="{Binding Profile.RFCTicks}" Minimum="0"
+                                    Maximum="65535"/>
+                <xctk:IntegerUpDown Grid.Row="6" Grid.Column="2" IsEnabled="False"/>
+                <TextBox Grid.Row="6" Grid.Column="3" IsReadOnly="True"
+                         Text="{Binding Profile.RFCTicks, StringFormat={}{0:F3}ns, 
+                                Converter={StaticResource TicksToTimeConverter}}"/>
+                <TextBox Grid.Row="6" Grid.Column="4" IsReadOnly="True" Text="{Binding tRFC, Mode=OneWay}"/>
+
+                <Label Grid.Row="7" Grid.Column="0" Content="tRFC2:"/>
+                <xctk:IntegerUpDown Grid.Row="7" Grid.Column="1" Value="{Binding Profile.RFC2Ticks}" Minimum="0"
+                                    Maximum="65535"/>
+                <xctk:IntegerUpDown Grid.Row="7" Grid.Column="2" IsEnabled="False"/>
+                <TextBox Grid.Row="7" Grid.Column="3" IsReadOnly="True"
+                         Text="{Binding Profile.RFC2Ticks, StringFormat={}{0:F3}ns, 
+                                Converter={StaticResource TicksToTimeConverter}}"/>
+                <TextBox Grid.Row="7" Grid.Column="4" IsReadOnly="True" Text="{Binding tRFC2, Mode=OneWay}"/>
+
+                <Label Grid.Row="8" Grid.Column="0" Content="tRFC4:"/>
+                <xctk:IntegerUpDown Grid.Row="8" Grid.Column="1" Value="{Binding Profile.RFC4Ticks}" Minimum="0"
+                                    Maximum="65535"/>
+                <xctk:IntegerUpDown Grid.Row="8" Grid.Column="2" IsEnabled="False"/>
+                <TextBox Grid.Row="8" Grid.Column="3" IsReadOnly="True"
+                         Text="{Binding Profile.RFC2Ticks, StringFormat={}{0:F3}ns, 
+                                Converter={StaticResource TicksToTimeConverter}}"/>
+                <TextBox Grid.Row="8" Grid.Column="4" IsReadOnly="True" Text="{Binding tRFC4, Mode=OneWay}"/>
+
+                <Label Grid.Row="9" Grid.Column="0" Content="tRRDS:"/>
+                <xctk:IntegerUpDown Grid.Row="9" Grid.Column="1" Value="{Binding Profile.RRDSTicks}" Minimum="0"
+                                    Maximum="255"/>
+                <xctk:IntegerUpDown Grid.Row="9" Grid.Column="2" Value="{Binding Profile.RRDSFC}" Minimum="-127"
+                                    Maximum="127"/>
+                <TextBox Grid.Row="9" Grid.Column="3" IsReadOnly="True"
+                         Text="{Binding tRRDSTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
+                <TextBox Grid.Row="9" Grid.Column="4" IsReadOnly="True" Text="{Binding tRRDS, Mode=OneWay}"/>
+                
+                <Label Grid.Row="10" Grid.Column="0" Content="tRRDL:"/>
+                <xctk:IntegerUpDown Grid.Row="10" Grid.Column="1" Value="{Binding Profile.RRDLTicks}" Minimum="0"
+                                    Maximum="255"/>
+                <xctk:IntegerUpDown Grid.Row="10" Grid.Column="2" Value="{Binding Profile.RRDLFC}" Minimum="-127"
+                                    Maximum="127"/>
+                <TextBox Grid.Row="10" Grid.Column="3" IsReadOnly="True"
+                         Text="{Binding tRRDLTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
+                <TextBox Grid.Row="10" Grid.Column="4" IsReadOnly="True" Text="{Binding tRRDL, Mode=OneWay}"/>
+                
+                <Label Grid.Row="11" Grid.Column="0" Content="tFAW:"/>
+                <xctk:IntegerUpDown Grid.Row="11" Grid.Column="1" Text="{Binding Profile.FAWTicks}" Minimum="0"
+                                    Maximum="4095"/>
+                <xctk:IntegerUpDown Grid.Row="11" Grid.Column="2" IsEnabled="False"/>
+                <TextBox Grid.Row="11" Grid.Column="3" IsReadOnly="True"
+                         Text="{Binding Profile.FAWTicks, StringFormat={}{0:F3}ns, 
+                                Converter={StaticResource TicksToTimeConverter}}"/>
+                <TextBox Grid.Row="11" Grid.Column="4" IsReadOnly="True" Text="{Binding tFAW, Mode=OneWay}"/>
+            </Grid>
+        </GroupBox>
+    </StackPanel>
+</UserControl>
