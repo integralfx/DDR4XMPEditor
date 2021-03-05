@@ -128,7 +128,8 @@
                                     Maximum="127"/>
                 <TextBox Grid.Row="1" Grid.Column="3" IsReadOnly="True"
                          Text="{Binding tCLTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
-                <TextBox Grid.Row="1" Grid.Column="4" IsReadOnly="True" Text="{Binding tCL, Mode=OneWay}"/>
+                <xctk:IntegerUpDown Grid.Row="1" Grid.Column="4" Value="{Binding tCL}" Minimum="0" 
+                                    Maximum="30"/>
 
                 <Label Grid.Row="2" Grid.Column="0" Content="tRCD:"/>
                 <xctk:IntegerUpDown Grid.Row="2" Grid.Column="1" Value="{Binding Profile.RCDTicks}" Minimum="0"
@@ -137,7 +138,8 @@
                                     Maximum="127"/>
                 <TextBox Grid.Row="2" Grid.Column="3" IsReadOnly="True"
                          Text="{Binding tRCDTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
-                <TextBox Grid.Row="2" Grid.Column="4" IsReadOnly="True" Text="{Binding tRCD, Mode=OneWay}"/>
+                <xctk:IntegerUpDown Grid.Row="2" Grid.Column="4" Value="{Binding tRCD}" Minimum="0" 
+                                    Maximum="64"/>
                 
                 <Label Grid.Row="3" Grid.Column="0" Content="tRP:"/>
                 <xctk:IntegerUpDown Grid.Row="3" Grid.Column="1" Value="{Binding Profile.RPTicks}" Minimum="0"
@@ -146,7 +148,8 @@
                                     Maximum="127"/>
                 <TextBox Grid.Row="3" Grid.Column="3" IsReadOnly="True"
                          Text="{Binding tRPTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
-                <TextBox Grid.Row="3" Grid.Column="4" IsReadOnly="True" Text="{Binding tRP, Mode=OneWay}"/>
+                <xctk:IntegerUpDown Grid.Row="3" Grid.Column="4" Value="{Binding tRP}" Minimum="0" 
+                                    Maximum="64"/>
 
                 <Label Grid.Row="4" Grid.Column="0" Content="tRAS:"/>
                 <xctk:IntegerUpDown Grid.Row="4" Grid.Column="1" Value="{Binding Profile.RASTicks}" Minimum="0"
@@ -155,7 +158,8 @@
                 <TextBox Grid.Row="4" Grid.Column="3" IsReadOnly="True"
                          Text="{Binding Profile.RASTicks, StringFormat={}{0:F3}ns, 
                                 Converter={StaticResource TicksToTimeConverter}}"/>
-                <TextBox Grid.Row="4" Grid.Column="4" IsReadOnly="True" Text="{Binding tRAS, Mode=OneWay}"/>
+                <xctk:IntegerUpDown Grid.Row="4" Grid.Column="4" Value="{Binding tRAS}" Minimum="0" 
+                                    Maximum="128"/>
 
                 <Label Grid.Row="5" Grid.Column="0" Content="tRC:"/>
                 <xctk:IntegerUpDown Grid.Row="5" Grid.Column="1" Value="{Binding Profile.RCTicks}" Minimum="0"
@@ -164,7 +168,8 @@
                                     Maximum="127"/>
                 <TextBox Grid.Row="5" Grid.Column="3" IsReadOnly="True"
                          Text="{Binding tRCTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
-                <TextBox Grid.Row="5" Grid.Column="4" IsReadOnly="True" Text="{Binding tRC, Mode=OneWay}"/>
+                <xctk:IntegerUpDown Grid.Row="5" Grid.Column="4" Value="{Binding tRC}" Minimum="0" 
+                                    Maximum="128"/>
 
                 <Label Grid.Row="6" Grid.Column="0" Content="tRFC:"/>
                 <xctk:IntegerUpDown Grid.Row="6" Grid.Column="1" Value="{Binding Profile.RFCTicks}" Minimum="0"
@@ -173,7 +178,8 @@
                 <TextBox Grid.Row="6" Grid.Column="3" IsReadOnly="True"
                          Text="{Binding Profile.RFCTicks, StringFormat={}{0:F3}ns, 
                                 Converter={StaticResource TicksToTimeConverter}}"/>
-                <TextBox Grid.Row="6" Grid.Column="4" IsReadOnly="True" Text="{Binding tRFC, Mode=OneWay}"/>
+                <xctk:IntegerUpDown Grid.Row="6" Grid.Column="4" Value="{Binding tRFC}" Minimum="0" 
+                                    Maximum="1024"/>
 
                 <Label Grid.Row="7" Grid.Column="0" Content="tRFC2:"/>
                 <xctk:IntegerUpDown Grid.Row="7" Grid.Column="1" Value="{Binding Profile.RFC2Ticks}" Minimum="0"
@@ -182,16 +188,18 @@
                 <TextBox Grid.Row="7" Grid.Column="3" IsReadOnly="True"
                          Text="{Binding Profile.RFC2Ticks, StringFormat={}{0:F3}ns, 
                                 Converter={StaticResource TicksToTimeConverter}}"/>
-                <TextBox Grid.Row="7" Grid.Column="4" IsReadOnly="True" Text="{Binding tRFC2, Mode=OneWay}"/>
+                <xctk:IntegerUpDown Grid.Row="7" Grid.Column="4" Value="{Binding tRFC2}" Minimum="0" 
+                                    Maximum="1024"/>
 
                 <Label Grid.Row="8" Grid.Column="0" Content="tRFC4:"/>
                 <xctk:IntegerUpDown Grid.Row="8" Grid.Column="1" Value="{Binding Profile.RFC4Ticks}" Minimum="0"
                                     Maximum="65535"/>
                 <xctk:IntegerUpDown Grid.Row="8" Grid.Column="2" IsEnabled="False"/>
                 <TextBox Grid.Row="8" Grid.Column="3" IsReadOnly="True"
-                         Text="{Binding Profile.RFC2Ticks, StringFormat={}{0:F3}ns, 
+                         Text="{Binding Profile.RFC4Ticks, StringFormat={}{0:F3}ns, 
                                 Converter={StaticResource TicksToTimeConverter}}"/>
-                <TextBox Grid.Row="8" Grid.Column="4" IsReadOnly="True" Text="{Binding tRFC4, Mode=OneWay}"/>
+                <xctk:IntegerUpDown Grid.Row="8" Grid.Column="4" Value="{Binding tRFC4}" Minimum="0" 
+                                    Maximum="1024"/>
 
                 <Label Grid.Row="9" Grid.Column="0" Content="tRRDS:"/>
                 <xctk:IntegerUpDown Grid.Row="9" Grid.Column="1" Value="{Binding Profile.RRDSTicks}" Minimum="0"
@@ -200,8 +208,9 @@
                                     Maximum="127"/>
                 <TextBox Grid.Row="9" Grid.Column="3" IsReadOnly="True"
                          Text="{Binding tRRDSTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
-                <TextBox Grid.Row="9" Grid.Column="4" IsReadOnly="True" Text="{Binding tRRDS, Mode=OneWay}"/>
-                
+                <xctk:IntegerUpDown Grid.Row="9" Grid.Column="4" Value="{Binding tRRDS}" Minimum="0" 
+                                    Maximum="64"/>
+
                 <Label Grid.Row="10" Grid.Column="0" Content="tRRDL:"/>
                 <xctk:IntegerUpDown Grid.Row="10" Grid.Column="1" Value="{Binding Profile.RRDLTicks}" Minimum="0"
                                     Maximum="255"/>
@@ -209,8 +218,9 @@
                                     Maximum="127"/>
                 <TextBox Grid.Row="10" Grid.Column="3" IsReadOnly="True"
                          Text="{Binding tRRDLTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
-                <TextBox Grid.Row="10" Grid.Column="4" IsReadOnly="True" Text="{Binding tRRDL, Mode=OneWay}"/>
-                
+                <xctk:IntegerUpDown Grid.Row="10" Grid.Column="4" Value="{Binding tRRDL}" Minimum="0" 
+                                    Maximum="64"/>
+
                 <Label Grid.Row="11" Grid.Column="0" Content="tFAW:"/>
                 <xctk:IntegerUpDown Grid.Row="11" Grid.Column="1" Value="{Binding Profile.FAWTicks}" Minimum="0"
                                     Maximum="4095"/>
@@ -218,7 +228,8 @@
                 <TextBox Grid.Row="11" Grid.Column="3" IsReadOnly="True"
                          Text="{Binding Profile.FAWTicks, StringFormat={}{0:F3}ns, 
                                 Converter={StaticResource TicksToTimeConverter}}"/>
-                <TextBox Grid.Row="11" Grid.Column="4" IsReadOnly="True" Text="{Binding tFAW, Mode=OneWay}"/>
+                <xctk:IntegerUpDown Grid.Row="11" Grid.Column="4" Value="{Binding tFAW}" Minimum="0" 
+                                    Maximum="128"/>
             </Grid>
         </GroupBox>
     </StackPanel>

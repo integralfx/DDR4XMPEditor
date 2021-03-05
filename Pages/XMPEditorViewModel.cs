@@ -111,7 +111,7 @@ namespace DDR4XMPEditor.Pages
                 int? ticks = DRAMTicksToMTBTicks(value);
                 if (ticks.HasValue)
                 {
-                    Profile.RCTicks = (byte)ticks.Value;
+                    Profile.RCTicks = ticks.Value;
                 }
             }
         }
@@ -129,7 +129,7 @@ namespace DDR4XMPEditor.Pages
                 int? ticks = DRAMTicksToMTBTicks(value);
                 if (ticks.HasValue)
                 {
-                    Profile.RASTicks = (byte)ticks.Value;
+                    Profile.RFCTicks = (ushort)ticks.Value;
                 }
             }
         }
@@ -146,7 +146,7 @@ namespace DDR4XMPEditor.Pages
                 int? ticks = DRAMTicksToMTBTicks(value);
                 if (ticks.HasValue)
                 {
-                    Profile.RFC2Ticks = (byte)ticks.Value;
+                    Profile.RFC2Ticks = (ushort)ticks.Value;
                 }
             }
         }
@@ -163,7 +163,7 @@ namespace DDR4XMPEditor.Pages
                 int? ticks = DRAMTicksToMTBTicks(value);
                 if (ticks.HasValue)
                 {
-                    Profile.RFC4Ticks = (byte)ticks.Value;
+                    Profile.RFC4Ticks = (ushort)ticks.Value;
                 }
             }
         }
