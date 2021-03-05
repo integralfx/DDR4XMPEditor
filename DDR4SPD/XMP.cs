@@ -215,7 +215,7 @@ namespace DDR4XMPEditor.DDR4SPD
 
         public int FAWTicks
         {
-            get => (rawXMP.fawUpperNibble & 0xF << 8) | rawXMP.fawTicks;
+            get => ((rawXMP.fawUpperNibble & 0xF) << 8) | rawXMP.fawTicks;
             set
             {
                 rawXMP.fawUpperNibble = (byte)(rawXMP.fawUpperNibble & 0xF0 | value >> 8 & 0xF);

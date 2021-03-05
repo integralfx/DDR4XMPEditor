@@ -212,7 +212,7 @@
                 <TextBox Grid.Row="10" Grid.Column="4" IsReadOnly="True" Text="{Binding tRRDL, Mode=OneWay}"/>
                 
                 <Label Grid.Row="11" Grid.Column="0" Content="tFAW:"/>
-                <xctk:IntegerUpDown Grid.Row="11" Grid.Column="1" Text="{Binding Profile.FAWTicks}" Minimum="0"
+                <xctk:IntegerUpDown Grid.Row="11" Grid.Column="1" Value="{Binding Profile.FAWTicks}" Minimum="0"
                                     Maximum="4095"/>
                 <xctk:IntegerUpDown Grid.Row="11" Grid.Column="2" IsEnabled="False"/>
                 <TextBox Grid.Row="11" Grid.Column="3" IsReadOnly="True"
