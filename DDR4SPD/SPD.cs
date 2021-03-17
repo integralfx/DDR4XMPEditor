@@ -23,6 +23,8 @@ namespace DDR4XMPEditor.DDR4SPD
         };
 
         public static readonly byte[] HeaderMagic = { 0x0C, 0x4A };
+        public static readonly byte[] HeaderMagic0 = { 0, 0 };
+        public static readonly byte Version = 0x20;
         public const int Size = 512;
         public const int PreHeaderSize = 0x180;
 
@@ -121,9 +123,10 @@ namespace DDR4XMPEditor.DDR4SPD
                     return null;
                 }
 
-                var spdBytes = bytes.Skip(PreHeaderSize).ToArray();
+                var xmpBytes = bytes.Skip(PreHeaderSize).ToArray();
+                var headerMagic = xmpBytes.Take(HeaderMagic.Length);
                 // Check the magic constants.
-                if (spdBytes.Take(HeaderMagic.Length).SequenceEqual(HeaderMagic))
+                if (headerMagic.SequenceEqual(HeaderMagic) || headerMagic.SequenceEqual(HeaderMagic0))
                 {
                     SPD spd = new SPD
                     {
@@ -131,12 +134,26 @@ namespace DDR4XMPEditor.DDR4SPD
                     };
 
                     // Read the header.
-                    var handle = GCHandle.Alloc(spdBytes, GCHandleType.Pinned);
+                    var handle = GCHandle.Alloc(xmpBytes, GCHandleType.Pinned);
                     spd.header = Marshal.PtrToStructure<Header>(handle.AddrOfPinnedObject());
                     handle.Free();
 
+                    // Write the header magic and version if the SPD didn't come with XMP.
+                    if (spd.header.magic1 == 0)
+                    {
+                        spd.header.magic1 = HeaderMagic[0];
+                    }
+                    if (spd.header.magic2 == 0)
+                    {
+                        spd.header.magic2 = HeaderMagic[1];
+                    }
+                    if (spd.header.version == 0)
+                    {
+                        spd.header.version = Version;
+                    }
+
                     // Parse the XMP profiles (if any).
-                    spd.ParseXMP(spdBytes.Skip(Marshal.SizeOf<Header>()).ToArray());
+                    spd.ParseXMP(xmpBytes.Skip(Marshal.SizeOf<Header>()).ToArray());
 
                     return spd;
                 }
