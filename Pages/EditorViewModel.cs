@@ -1,6 +1,8 @@
 ﻿using DDR4XMPEditor.DDR4SPD;
 using DDR4XMPEditor.Events;
 using Stylet;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -39,12 +41,18 @@ namespace DDR4XMPEditor.Pages
                 xmpVm1.IsEnabled = SPD.XMP1Enabled;
                 SPD.Bind(x => x.XMP1Enabled, (s, args) => xmpVm1.IsEnabled = args.NewValue);
                 xmpVm1.Profile = SPD.XMP1;
-                xmpVm1.CLSupported = Enumerable.Range(0, 31).Select(cl => xmpVm1.Profile.IsCLSupported(cl)).ToArray();
+                for (int i = 0; i < xmpVm1.CLSupported.Count; ++i)
+                {
+                    xmpVm1.CLSupported[i] = xmpVm1.Profile.IsCLSupported(i);
+                }
 
                 xmpVm2.IsEnabled = SPD.XMP2Enabled;
                 SPD.Bind(x => x.XMP2Enabled, (s, args) => xmpVm2.IsEnabled = args.NewValue);
                 xmpVm2.Profile = SPD.XMP2;
-                xmpVm2.CLSupported = Enumerable.Range(0, 31).Select(cl => xmpVm2.Profile.IsCLSupported(cl)).ToArray();
+                for (int i = 0; i < xmpVm2.CLSupported.Count; ++i)
+                {
+                    xmpVm2.CLSupported[i] = xmpVm2.Profile.IsCLSupported(i);
+                }
                 
                 BindNotifyPropertyChanged(xmpVm1);
                 BindNotifyPropertyChanged(xmpVm2);
