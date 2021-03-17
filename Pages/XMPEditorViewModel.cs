@@ -1,7 +1,9 @@
 ﻿using DDR4XMPEditor.DDR4SPD;
 using Stylet;
 using System;
+using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Windows.Data;
 
 namespace DDR4XMPEditor.Pages
@@ -25,7 +27,17 @@ namespace DDR4XMPEditor.Pages
             }
         }
 
-        public bool[] CLSupported { get; set; }
+        public XMPEditorViewModel()
+        {
+            CLSupported = new BindingList<bool>(Enumerable.Range(0, 31).Select(n => false).ToList());
+            CLSupported.ListChanged += (s, e) =>
+            {
+                Profile.SetCLSupported(e.NewIndex, CLSupported[e.NewIndex]);
+                Refresh();
+            };
+        }
+
+        public BindingList<bool> CLSupported { get; private set; }
 
         public int? tCL 
         {
