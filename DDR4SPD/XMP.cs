@@ -119,7 +119,7 @@ namespace DDR4XMPEditor.DDR4SPD
                 return false;
             }
 
-            int[] mask = { 1, 2, 4, 8, 16, 32, 64 };
+            int[] mask = { 1, 2, 4, 8, 16, 32, 64, 128 };
             if (cl >= 7 && cl <= 14)
             {
                 if (supported)
