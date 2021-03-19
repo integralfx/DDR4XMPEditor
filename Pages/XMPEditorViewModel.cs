@@ -244,7 +244,7 @@ namespace DDR4XMPEditor.Pages
             {
                 return null;
             }
-            return (int)Math.Round(timeps.Value/1000.0 / SDRAMCycleTime.Value);
+            return (int)Math.Ceiling(timeps.Value/1000.0 / SDRAMCycleTime.Value);
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace DDR4XMPEditor.Pages
             }
 
             int sdramCycleTime = Profile.SDRAMCycleTicks * XMP.MTBps + Profile.SDRAMCycleTimeFC;
-            return (int)Math.Ceiling(1.0 * dramTicks.Value * sdramCycleTime / XMP.MTBps);
+            return (int)Math.Floor(1.0 * dramTicks.Value * sdramCycleTime / XMP.MTBps);
         }
     }
 
