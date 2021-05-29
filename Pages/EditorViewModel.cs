@@ -64,6 +64,14 @@ namespace DDR4XMPEditor.Pages
 
                 miscVm.IsEnabled = true;
                 miscVm.SPD = spd;
+                if (spd.Density.HasValue)
+                {
+                    miscVm.SelectedDensity = spd.Density.Value;
+                }
+                miscVm.SelectedBank = spd.Banks;
+                miscVm.SelectedBankGroups = spd.BankGroups;
+                miscVm.SelectedColumnAddress = spd.ColumnAddresses;
+                miscVm.SelectedRowAddress = spd.RowAddresses;
             }
         }
 

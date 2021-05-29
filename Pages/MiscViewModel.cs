@@ -21,11 +21,31 @@ namespace DDR4XMPEditor.Pages
         public ObservableCollection<int> ColumnAddressesCollection { get; set; }
         public ObservableCollection<int> RowAddressesCollection { get; set; }
 
-        public SPD.Densities SelectedDensity { get; set; }
-        public int SelectedBank { get; set; }
-        public int SelectedBankGroups { get; set; }
-        public int SelectedColumnAddress { get; set; }
-        public int SelectedRowAddress{ get; set; }
+        public SPD.Densities SelectedDensity 
+        { 
+            get => SPD != null && SPD.Density.HasValue ? SPD.Density.Value : SPD.Densities._256Mb;
+            set => SPD.Density = value;
+        }
+        public int SelectedBank 
+        { 
+            get => SPD != null ? SPD.Banks : 2;
+            set => SPD.Banks = value; 
+        }
+        public int SelectedBankGroups 
+        { 
+            get => SPD != null ? SPD.BankGroups : 0; 
+            set => SPD.BankGroups = value; 
+        }
+        public int SelectedColumnAddress 
+        { 
+            get => SPD != null ? SPD.ColumnAddresses : 9; 
+            set => SPD.ColumnAddresses = value; 
+        }
+        public int SelectedRowAddress
+        { 
+            get => SPD != null ? SPD.RowAddresses : 12; 
+            set => SPD.RowAddresses = value; 
+        }
 
         public MiscViewModel()
         {
