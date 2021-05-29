@@ -77,6 +77,7 @@ namespace DDR4XMPEditor.Pages
 
         public void Handle(SaveSPDFileEvent e)
         {
+            SPD.UpdateCrc();
             var bytes = SPD.GetBytes();
             File.WriteAllBytes(e.FilePath, bytes);
             MessageBox.Show(
