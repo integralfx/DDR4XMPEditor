@@ -86,7 +86,7 @@ namespace DDR4XMPEditor.DDR4SPD
             }
         }
 
-        public int BankAddressBits
+        public int Banks
         {
             get => bankAddressBitsMap[(rawSpd[4] >> 4) & 0x3];
             set
@@ -99,7 +99,7 @@ namespace DDR4XMPEditor.DDR4SPD
             }
         }
 
-        public int BankGroupBits
+        public int BankGroups
         {
             get => bankGroupBitsMap[(rawSpd[4] >> 6) & 0x3];
             set
@@ -112,7 +112,7 @@ namespace DDR4XMPEditor.DDR4SPD
             }
         }
 
-        public int ColumnAddressBits
+        public int ColumnAddresses
         {
             get => columnAddressBitsMap[rawSpd[5] & 0x7];
             set
@@ -125,7 +125,7 @@ namespace DDR4XMPEditor.DDR4SPD
             }
         }
 
-        public int RowAddressBits
+        public int RowAddresses
         {
             get => rowAddressBitsMap[(rawSpd[5] >> 3) & 0x7];
             set

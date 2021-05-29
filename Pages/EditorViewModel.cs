@@ -18,12 +18,14 @@ namespace DDR4XMPEditor.Pages
         public bool IsSPDValid => SPD != null;
 
         private readonly XMPEditorViewModel xmpVm1, xmpVm2;
+        private readonly MiscViewModel miscVm = new MiscViewModel { DisplayName = "Misc" };
 
         public EditorViewModel(IEventAggregator aggregator)
         {
             aggregator.Subscribe(this);
-            Items.Add(xmpVm1 = new XMPEditorViewModel() { DisplayName = "XMP 1" });
-            Items.Add(xmpVm2 = new XMPEditorViewModel() { DisplayName = "XMP 2" });
+            Items.Add(xmpVm1 = new XMPEditorViewModel { DisplayName = "XMP 1" });
+            Items.Add(xmpVm2 = new XMPEditorViewModel { DisplayName = "XMP 2" });
+            Items.Add(miscVm);
             ActiveItem = Items[0];
         }
 
@@ -59,6 +61,9 @@ namespace DDR4XMPEditor.Pages
 
                 FilePath = e.FilePath;
                 FileName = Path.GetFileName(FilePath);
+
+                miscVm.IsEnabled = true;
+                miscVm.SPD = spd;
             }
         }
 
