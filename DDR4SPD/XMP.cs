@@ -283,8 +283,9 @@ namespace DDR4XMPEditor.DDR4SPD
             byte[] bytes = null;
             try
             {
-                bytes = new byte[Marshal.SizeOf<RawXMP>()];
-                ptr = Marshal.AllocHGlobal(Marshal.SizeOf<RawXMP>());
+                var size = Marshal.SizeOf<RawXMP>();
+                bytes = new byte[size];
+                ptr = Marshal.AllocHGlobal(size);
                 Marshal.StructureToPtr(rawXMP, ptr, true);
                 Marshal.Copy(ptr, bytes, 0, bytes.Length);
             }
@@ -300,6 +301,11 @@ namespace DDR4XMPEditor.DDR4SPD
             return bytes;
         }
 
+        /// <summary>
+        /// Parses a single XMP profile.
+        /// </summary>
+        /// <param name="bytes">The raw bytes of the XMP.</param>
+        /// <returns>An <see cref="XMP"/> object.</returns>
         public static XMP Parse(byte[] bytes)
         {
             if (bytes.Length != Size)
