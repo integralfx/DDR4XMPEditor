@@ -45,5 +45,32 @@
                           SelectedValue="{Binding SelectedRowAddress}"/>
             </Grid>
         </GroupBox>
+
+        <GroupBox Header="Module Organization">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="Device Width:"/>
+                <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding DeviceWidthsCollection}" 
+                          SelectedValue="{Binding SelectedDeviceWidth}"/>
+
+                <Label Grid.Row="1" Grid.Column="0" Content="Package Ranks:"/>
+                <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding PackageRanksCollection}" 
+                          SelectedValue="{Binding SelectedPackageRank}"/>
+
+                <Label Grid.Row="2" Grid.Column="0" Content="Rank Mix:"/>
+                <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding RankMixCollection}"
+                          DisplayMemberPath="Item1" SelectedValuePath="Item2"
+                          SelectedValue="{Binding SelectedRankMix}"/>
+            </Grid>
+        </GroupBox>
     </StackPanel>
 </UserControl>

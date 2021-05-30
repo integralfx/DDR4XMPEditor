@@ -64,6 +64,8 @@ namespace DDR4XMPEditor.DDR4SPD
         private static readonly int[] bankGroupBitsMap = new int[4] { 0, 2, 4, -1 };
         private static readonly int[] columnAddressBitsMap = new int[8] { 9, 10, 11, 12, -1, -1, -1, -1 };
         private static readonly int[] rowAddressBitsMap = new int[8] { 12, 13, 14, 15, 16, 17, 18, -1 };
+        private static readonly int[] deviceWidthMap = new int[8] { 4, 8, 16, 32, -1, -1, -1, -1 };
+        private static readonly int[] packageRanksMap = new int[8] { 1, 2, 3, 4, 5, 6, 7, 8 };
 
         public Densities? Density
         {
@@ -134,6 +136,51 @@ namespace DDR4XMPEditor.DDR4SPD
                 if (index != -1 && value != -1)
                 {
                     rawSpd[5] = (byte)((rawSpd[5] & 0xC0) | (index << 3) | (rawSpd[5] & 0x7));
+                }
+            }
+        }
+
+        public int DeviceWidth
+        {
+            get => deviceWidthMap[rawSpd[0xC] & 0b111];
+            set
+            {
+                int index = Array.IndexOf(deviceWidthMap, value);
+                if (index != -1 && value != -1)
+                {
+                    rawSpd[0xC] = (byte)((rawSpd[0xC] & 0b11111000) | index);
+                }
+            }
+        }
+
+        public int PackageRanks
+        {
+            get => packageRanksMap[(rawSpd[0xC] >> 3) & 0b111];
+            set
+            {
+                int index = Array.IndexOf(packageRanksMap, value);
+                if (index != -1 && value != -1)
+                {
+                    rawSpd[0xC] = (byte)((rawSpd[0xC] & 0b11000000) | (index << 3) | (rawSpd[0xC] & 0b111));
+                }
+            }
+        }
+
+        /// <summary>
+        /// False is symmetrical. True is asymmetrical.
+        /// </summary>
+        public bool RankMix
+        {
+            get => (rawSpd[0xC] & 0b01000000) == 0b01000000;
+            set
+            {
+                if (value)
+                {
+                    rawSpd[0xC] |= 0b01000000;
+                }
+                else
+                {
+                    rawSpd[0xC] &= 0b10111111;
                 }
             }
         }

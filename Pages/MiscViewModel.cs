@@ -20,6 +20,9 @@ namespace DDR4XMPEditor.Pages
         public ObservableCollection<int> BankGroupsCollection { get; set; }
         public ObservableCollection<int> ColumnAddressesCollection { get; set; }
         public ObservableCollection<int> RowAddressesCollection { get; set; }
+        public ObservableCollection<int> DeviceWidthsCollection { get; set; }
+        public ObservableCollection<int> PackageRanksCollection { get; set; }
+        public ObservableCollection<Tuple<string, bool>> RankMixCollection { get; set; }
 
         public SPD.Densities SelectedDensity 
         { 
@@ -28,23 +31,41 @@ namespace DDR4XMPEditor.Pages
         }
         public int SelectedBank 
         { 
-            get => SPD != null ? SPD.Banks : 2;
+            get => SPD != null ? SPD.Banks : BanksCollection.First();
             set => SPD.Banks = value; 
         }
         public int SelectedBankGroups 
         { 
-            get => SPD != null ? SPD.BankGroups : 0; 
+            get => SPD != null ? SPD.BankGroups : BankGroupsCollection.First(); 
             set => SPD.BankGroups = value; 
         }
         public int SelectedColumnAddress 
         { 
-            get => SPD != null ? SPD.ColumnAddresses : 9; 
+            get => SPD != null ? SPD.ColumnAddresses : ColumnAddressesCollection.First(); 
             set => SPD.ColumnAddresses = value; 
         }
         public int SelectedRowAddress
         { 
-            get => SPD != null ? SPD.RowAddresses : 12; 
+            get => SPD != null ? SPD.RowAddresses : RowAddressesCollection.First(); 
             set => SPD.RowAddresses = value; 
+        }
+
+        public int SelectedDeviceWidth
+        {
+            get => SPD != null ? SPD.DeviceWidth : DeviceWidthsCollection.First();
+            set => SPD.DeviceWidth = value;
+        }
+
+        public int SelectedPackageRank
+        {
+            get => SPD != null ? SPD.PackageRanks : PackageRanksCollection.First();
+            set => SPD.PackageRanks = value;
+        }
+
+        public bool SelectedRankMix
+        {
+            get => SPD != null ? SPD.RankMix : RankMixCollection.First().Item2;
+            set => SPD.RankMix = value;
         }
 
         public MiscViewModel()
@@ -63,11 +84,19 @@ namespace DDR4XMPEditor.Pages
                 Tuple.Create("24Gb", SPD.Densities._24Gb)
             };
 
-            BanksCollection = new ObservableCollection<int>(new int[2] { 4, 8 });
-            BankGroupsCollection = new ObservableCollection<int>(new int[3] { 0, 2, 4 });
+            BanksCollection = new ObservableCollection<int> { 4, 8 };
+            BankGroupsCollection = new ObservableCollection<int> { 0, 2, 4 };
 
             ColumnAddressesCollection = new ObservableCollection<int>(Enumerable.Range(9, 4));
             RowAddressesCollection = new ObservableCollection<int>(Enumerable.Range(12, 7));
+
+            DeviceWidthsCollection = new ObservableCollection<int> { 4, 8, 16, 32 };
+            PackageRanksCollection = new ObservableCollection<int>(Enumerable.Range(1, 8));
+            RankMixCollection = new ObservableCollection<Tuple<string, bool>>
+            {
+                Tuple.Create("Symmetrical", false),
+                Tuple.Create("Asymmetrical", true)
+            };
         }
     }
 }
