@@ -11,7 +11,7 @@ namespace DDR4XMPEditor.DDR4SPD
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private unsafe struct RawSpd
         {
-            public fixed byte unknown1[0x11];
+            public fixed byte unknown1[0x10 + 1];
             public byte timebase;   // [0:1]: FTB, [2:3]: MTB
             public byte minCycleTime;
             public byte maxCycleTime;
@@ -53,7 +53,11 @@ namespace DDR4XMPEditor.DDR4SPD
             public byte minCycleTimeFc;
             public byte crcLsb;
             public byte crcMsb;
-            public fixed byte unknown3[0x13F - 0x80 + 1];
+            // Module specific section
+            public fixed byte unknown3[0xFD - 0x80 + 1];
+            public byte mspCrcLsb;
+            public byte mspCrcMsb;
+            public fixed byte unknown4[0x13F - 0x100 + 1];
             public fixed byte manufacturer[2];
             public byte manufacturingLocation;
             public byte manufacturingYear;
@@ -63,7 +67,7 @@ namespace DDR4XMPEditor.DDR4SPD
             public byte revisionCode;
             public fixed byte manufacturerIdCode[2];
             public byte dramStepping;
-            public fixed byte unknown4[0x17F - 0x161 + 1];
+            public fixed byte unknown5[0x17F - 0x161 + 1];
         }
 
         public enum Densities
@@ -100,6 +104,7 @@ namespace DDR4XMPEditor.DDR4SPD
         public static readonly byte Version = 0x20;
         public const int TotalSize = 512;
         public const int SpdSize = 0x180;
+        public const int MTBps = 125;  // Medium timebase in picoseconds
 
         private byte[] rawSpdBytes = new byte[SpdSize];
         private RawSpd rawSpd;
@@ -246,20 +251,20 @@ namespace DDR4XMPEditor.DDR4SPD
 
         public ushort CRC1
         {
-            get => (ushort)((rawSpdBytes[0x7F] << 8) | (rawSpdBytes[0x7E]));
+            get => (ushort)((rawSpd.crcMsb << 8) | rawSpd.crcLsb);
             set
             {
-                rawSpdBytes[0x7E] = (byte)(value & 0xFF);
-                rawSpdBytes[0x7F] = (byte)((value >> 8) & 0xFF);
+                rawSpd.crcLsb = (byte)(value & 0xFF);
+                rawSpd.crcMsb = (byte)((value >> 8) & 0xFF);
             }
         }
         public ushort CRC2
         {
-            get => (ushort)((rawSpdBytes[0xFF] << 8) | (rawSpdBytes[0xFE]));
+            get => (ushort)((rawSpd.mspCrcMsb << 8) | (rawSpd.mspCrcLsb));
             set
             {
-                rawSpdBytes[0xFE] = (byte)(value & 0xFF);
-                rawSpdBytes[0xFF] = (byte)((value >> 8) & 0xFF);
+                rawSpd.mspCrcLsb = (byte)(value & 0xFF);
+                rawSpd.mspCrcMsb = (byte)((value >> 8) & 0xFF);
             }
         }
 

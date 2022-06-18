@@ -41,7 +41,7 @@ namespace DDR4XMPEditor.Pages
 
         public int? tCL 
         {
-            get => TimeToTicks(Profile?.CLTicks * XMP.MTBps + Profile?.CLFC);
+            get => TimeToTicks(Profile?.CLTicks * SPD.MTBps + Profile?.CLFC);
             set
             {
                 if (Profile == null)
@@ -56,10 +56,10 @@ namespace DDR4XMPEditor.Pages
                 }
             }
         }
-        public double? tCLTime => (Profile?.CLTicks * XMP.MTBps + Profile?.CLFC) / 1000.0;
+        public double? tCLTime => (Profile?.CLTicks * SPD.MTBps + Profile?.CLFC) / 1000.0;
         public int? tRCD 
         {
-            get => TimeToTicks(Profile?.RCDTicks * XMP.MTBps + Profile?.RCDFC);
+            get => TimeToTicks(Profile?.RCDTicks * SPD.MTBps + Profile?.RCDFC);
             set
             {
                 if (Profile == null)
@@ -74,10 +74,10 @@ namespace DDR4XMPEditor.Pages
                 }
             }
         }
-        public double? tRCDTime => (Profile?.RCDTicks * XMP.MTBps + Profile?.RCDFC) / 1000.0;
+        public double? tRCDTime => (Profile?.RCDTicks * SPD.MTBps + Profile?.RCDFC) / 1000.0;
         public int? tRP 
         {
-            get => TimeToTicks(Profile?.RPTicks * XMP.MTBps + Profile?.RPFC);
+            get => TimeToTicks(Profile?.RPTicks * SPD.MTBps + Profile?.RPFC);
             set
             {
                 if (Profile == null)
@@ -92,10 +92,10 @@ namespace DDR4XMPEditor.Pages
                 }
             }
         }
-        public double? tRPTime => (Profile?.RPTicks * XMP.MTBps + Profile?.RPFC) / 1000.0;
+        public double? tRPTime => (Profile?.RPTicks * SPD.MTBps + Profile?.RPFC) / 1000.0;
         public int? tRAS 
         { 
-            get => TimeToTicks(Profile?.RASTicks * XMP.MTBps); 
+            get => TimeToTicks(Profile?.RASTicks * SPD.MTBps); 
             set
             {
                 if (Profile == null)
@@ -112,7 +112,7 @@ namespace DDR4XMPEditor.Pages
         }
         public int? tRC 
         {
-            get => TimeToTicks(Profile?.RCTicks * XMP.MTBps + Profile?.RCFC); 
+            get => TimeToTicks(Profile?.RCTicks * SPD.MTBps + Profile?.RCFC); 
             set
             {
                 if (Profile == null)
@@ -127,10 +127,10 @@ namespace DDR4XMPEditor.Pages
                 }
             }
         }
-        public double? tRCTime => (Profile?.RCTicks * XMP.MTBps + Profile?.RCFC) / 1000.0;
+        public double? tRCTime => (Profile?.RCTicks * SPD.MTBps + Profile?.RCFC) / 1000.0;
         public int? tRFC 
         {
-            get => TimeToTicks(Profile?.RFCTicks * XMP.MTBps);
+            get => TimeToTicks(Profile?.RFCTicks * SPD.MTBps);
             set
             {
                 if (Profile == null)
@@ -147,7 +147,7 @@ namespace DDR4XMPEditor.Pages
         }
         public int? tRFC2 
         { 
-            get => TimeToTicks(Profile?.RFC2Ticks * XMP.MTBps); 
+            get => TimeToTicks(Profile?.RFC2Ticks * SPD.MTBps); 
             set
             {
                 if (Profile == null)
@@ -164,7 +164,7 @@ namespace DDR4XMPEditor.Pages
         }
         public int? tRFC4 
         {
-            get => TimeToTicks(Profile?.RFC4Ticks * XMP.MTBps);
+            get => TimeToTicks(Profile?.RFC4Ticks * SPD.MTBps);
             set
             {
                 if (Profile == null)
@@ -181,7 +181,7 @@ namespace DDR4XMPEditor.Pages
         }
         public int? tRRDS 
         { 
-            get => TimeToTicks(Profile?.RRDSTicks * XMP.MTBps + Profile?.RRDSFC);
+            get => TimeToTicks(Profile?.RRDSTicks * SPD.MTBps + Profile?.RRDSFC);
             set
             {
                 if (Profile == null)
@@ -196,10 +196,10 @@ namespace DDR4XMPEditor.Pages
                 }
             }
         }
-        public double? tRRDSTime => (Profile?.RRDSTicks * XMP.MTBps + Profile?.RRDSFC) / 1000.0;
+        public double? tRRDSTime => (Profile?.RRDSTicks * SPD.MTBps + Profile?.RRDSFC) / 1000.0;
         public int? tRRDL 
         {
-            get => TimeToTicks(Profile?.RRDLTicks * XMP.MTBps + Profile?.RRDLFC);
+            get => TimeToTicks(Profile?.RRDLTicks * SPD.MTBps + Profile?.RRDLFC);
             set
             {
                 if (Profile == null)
@@ -214,10 +214,10 @@ namespace DDR4XMPEditor.Pages
                 }
             }
         }
-        public double? tRRDLTime => (Profile?.RRDLTicks * XMP.MTBps + Profile?.RRDLFC) / 1000.0;
+        public double? tRRDLTime => (Profile?.RRDLTicks * SPD.MTBps + Profile?.RRDLFC) / 1000.0;
         public int? tFAW 
         {
-            get => TimeToTicks(Profile?.FAWTicks * XMP.MTBps);
+            get => TimeToTicks(Profile?.FAWTicks * SPD.MTBps);
             set
             {
                 if (Profile == null)
@@ -259,8 +259,8 @@ namespace DDR4XMPEditor.Pages
                 return null;
             }
 
-            int sdramCycleTime = Profile.SDRAMCycleTicks * XMP.MTBps + Profile.SDRAMCycleTimeFC;
-            return (int)Math.Floor(1.0 * dramTicks.Value * sdramCycleTime / XMP.MTBps);
+            int sdramCycleTime = Profile.SDRAMCycleTicks * SPD.MTBps + Profile.SDRAMCycleTimeFC;
+            return (int)Math.Floor(1.0 * dramTicks.Value * sdramCycleTime / SPD.MTBps);
         }
     }
 
@@ -271,12 +271,12 @@ namespace DDR4XMPEditor.Pages
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return System.Convert.ToInt32(value) * XMP.MTBps / 1000.0;
+            return System.Convert.ToInt32(value) * SPD.MTBps / 1000.0;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (int)Math.Round(((double)value * 1000.0 / XMP.MTBps));
+            return (int)Math.Round(((double)value * 1000.0 / SPD.MTBps));
         }
     }
 }

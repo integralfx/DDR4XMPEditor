@@ -57,7 +57,6 @@ namespace DDR4XMPEditor.DDR4SPD
         }
         
         public const int Size = 0x2F;
-        public const int MTBps = 125;  // Medium timebase in picoseconds
         private RawXMP rawXMP;
 
         /// <summary>

@@ -92,7 +92,7 @@ namespace DDR4XMPEditor.Pages
         {
             void UpdateFrequency()
             {
-                int? timeps = vm.Profile?.SDRAMCycleTicks * XMP.MTBps + vm.Profile?.SDRAMCycleTimeFC;
+                int? timeps = vm.Profile?.SDRAMCycleTicks * SPD.MTBps + vm.Profile?.SDRAMCycleTimeFC;
                 vm.SDRAMCycleTime = timeps / 1000.0;
             }
             UpdateFrequency();
