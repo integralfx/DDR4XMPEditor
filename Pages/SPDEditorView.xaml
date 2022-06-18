@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="DDR4XMPEditor.Pages.XMPEditorView"
+﻿<UserControl x:Class="DDR4XMPEditor.Pages.SPDEditorView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,12 +6,12 @@
       xmlns:local="clr-namespace:DDR4XMPEditor.Pages"
       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
       mc:Ignorable="d" 
-      d:DesignHeight="650" d:DesignWidth="360" IsEnabled="{Binding IsEnabled}">
+      d:DesignHeight="650" d:DesignWidth="360">
 
     <UserControl.Resources>
         <local:TicksToTimeConverter x:Key="TicksToTimeConverter"/>
     </UserControl.Resources>
-    
+
     <StackPanel>
         <GroupBox Header="Frequency and Voltage">
             <Grid>
@@ -24,11 +24,10 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
 
                 <Label Grid.Row="0" Grid.Column="0" Content="Frequency:"/>
-                <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" Value="{Binding Profile.SDRAMCycleTicks}" Minimum="0"/>
+                <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" Value="{Binding Profile.MinCycleTime}" Minimum="0"/>
                 <TextBox Grid.Row="0" Grid.Column="2" IsReadOnly="True" 
                          Text="{Binding SDRAMCycleTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
                 <TextBox Grid.Row="0" Grid.Column="3" IsReadOnly="True" 
@@ -36,11 +35,7 @@
 
                 <Label Grid.Row="1" Grid.Column="0" Content="Frequency Offset (ps):"/>
                 <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Minimum="-127" Maximum="127"
-                                    Value="{Binding Profile.SDRAMCycleTimeFC}"/>
-
-                <Label Grid.Row="2" Grid.Column="0" Content="Voltage:"/>
-                <xctk:IntegerUpDown Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Minimum="0" Maximum="227"
-                                    Value="{Binding Profile.Voltage}"/>
+                                    Value="{Binding Profile.MinCycleTimeFC}"/>
             </Grid>
         </GroupBox>
 
@@ -67,7 +62,7 @@
                 <CheckBox Grid.Row="0" Grid.Column="3" Content="10" IsChecked="{Binding CLSupported[10]}"/>
                 <CheckBox Grid.Row="0" Grid.Column="4" Content="11" IsChecked="{Binding CLSupported[11]}"/>
                 <CheckBox Grid.Row="0" Grid.Column="5" Content="12" IsChecked="{Binding CLSupported[12]}"/>
-                
+
                 <CheckBox Grid.Row="1" Grid.Column="0" Content="13" IsChecked="{Binding CLSupported[13]}"/>
                 <CheckBox Grid.Row="1" Grid.Column="1" Content="14" IsChecked="{Binding CLSupported[14]}"/>
                 <CheckBox Grid.Row="1" Grid.Column="2" Content="15" IsChecked="{Binding CLSupported[15]}"/>
@@ -90,7 +85,7 @@
                 <CheckBox Grid.Row="3" Grid.Column="5" Content="30" IsChecked="{Binding CLSupported[30]}"/>
             </Grid>
         </GroupBox>
-        
+
         <GroupBox Header="Timings">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -140,7 +135,7 @@
                          Text="{Binding tRCDTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
                 <xctk:IntegerUpDown Grid.Row="2" Grid.Column="4" Value="{Binding tRCD}" Minimum="0" 
                                     Maximum="64"/>
-                
+
                 <Label Grid.Row="3" Grid.Column="0" Content="tRP:"/>
                 <xctk:IntegerUpDown Grid.Row="3" Grid.Column="1" Value="{Binding Profile.RPTicks}" Minimum="0"
                                     Maximum="255"/>

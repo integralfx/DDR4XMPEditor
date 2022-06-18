@@ -166,10 +166,10 @@ namespace DDR4XMPEditor.DDR4SPD
 
         public int RASTicks
         {
-            get => (rawSPD.rasRCUpperNibble & 0xF << 8) | rawSPD.rasTicks;
+            get => ((rawSPD.rasRCUpperNibble & 0xF) << 8) | rawSPD.rasTicks;
             set
             {
-                rawSPD.rasRCUpperNibble = (byte)((rawSPD.rasRCUpperNibble & 0xF0) | (value >> 8 & 0xF));
+                rawSPD.rasRCUpperNibble = (byte)((rawSPD.rasRCUpperNibble & 0xF0) | ((value >> 8) & 0xF));
                 rawSPD.rasTicks = (byte)(value & 0xFF);
             }
         }

@@ -21,7 +21,7 @@ namespace DDR4XMPEditor.DDR4SPD
             public byte rasRCUpperNibble; // [0:3]: tRAS upper nibble, [4:7]: tRC upper nibble
             public byte rasTicks;
             public byte rcTicks;
-            public ushort rfcTicks;
+            public ushort rfc1Ticks;
             public ushort rfc2Ticks;
             public ushort rfc4Ticks;
             public byte fawUpperNibble; // [0:3] tFAW upper nibble
@@ -103,7 +103,7 @@ namespace DDR4XMPEditor.DDR4SPD
 
         public int RASTicks
         {
-            get => (rawXMP.rasRCUpperNibble & 0xF << 8) | rawXMP.rasTicks;
+            get => ((rawXMP.rasRCUpperNibble & 0xF) << 8) | rawXMP.rasTicks;
             set
             {
                 rawXMP.rasRCUpperNibble = (byte)((rawXMP.rasRCUpperNibble & 0xF0) | (value >> 8 & 0xF));
@@ -121,10 +121,10 @@ namespace DDR4XMPEditor.DDR4SPD
             }
         }
 
-        public ushort RFCTicks
+        public ushort RFC1Ticks
         {
-            get => rawXMP.rfcTicks;
-            set => rawXMP.rfcTicks = value;
+            get => rawXMP.rfc1Ticks;
+            set => rawXMP.rfc1Ticks = value;
         }
 
         public ushort RFC2Ticks

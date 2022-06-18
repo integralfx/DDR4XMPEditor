@@ -230,6 +230,7 @@
     <Compile Include="Pages\MenuBarViewModel.cs" />
     <Compile Include="Pages\MiscViewModel.cs" />
     <Compile Include="Pages\ShellViewModel.cs" />
+    <Compile Include="Pages\SPDEditorViewModel.cs" />
     <Compile Include="Pages\XMPEditorViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -273,6 +274,10 @@
     <Page Include="Pages\ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\SPDEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\XMPEditorView.xaml">
       <Generator>MSBuild:Compile</Generator>

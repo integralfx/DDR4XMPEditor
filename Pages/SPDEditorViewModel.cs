@@ -2,16 +2,13 @@
 using Stylet;
 using System;
 using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
-using System.Windows.Data;
 
 namespace DDR4XMPEditor.Pages
 {
-    public class XMPEditorViewModel : Screen
+    public class SPDEditorViewModel : Screen
     {
-        public XMP Profile { get; set; }
-        public bool IsEnabled { get; set; }
+        public SPD Profile { get; set; }
 
         public double? SDRAMCycleTime { get; set; }
         public double? Frequency
@@ -27,7 +24,7 @@ namespace DDR4XMPEditor.Pages
             }
         }
 
-        public XMPEditorViewModel()
+        public SPDEditorViewModel()
         {
             CLSupported = new BindingList<bool>(Enumerable.Range(0, 31).Select(n => false).ToList());
             CLSupported.ListChanged += (s, e) =>
@@ -133,7 +130,7 @@ namespace DDR4XMPEditor.Pages
             }
         }
         public double? tRCTime => (Profile?.RCTicks * SPD.MTBps + Profile?.RCFC) / 1000.0;
-        public int? tRFC 
+        public int? tRFC1
         {
             get => TimeToTicks(Profile?.RFC1Ticks * SPD.MTBps);
             set
@@ -264,24 +261,8 @@ namespace DDR4XMPEditor.Pages
                 return null;
             }
 
-            int sdramCycleTime = Profile.SDRAMCycleTicks * SPD.MTBps + Profile.SDRAMCycleTimeFC;
+            int sdramCycleTime = Profile.MinCycleTime * SPD.MTBps + Profile.MinCycleTimeFC;
             return (int)Math.Floor(1.0 * dramTicks.Value * sdramCycleTime / SPD.MTBps);
-        }
-    }
-
-    /// <summary>
-    /// Convert ticks to time (ns).
-    /// </summary>
-    public class TicksToTimeConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return System.Convert.ToInt32(value) * SPD.MTBps / 1000.0;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (int)Math.Round(((double)value * 1000.0 / SPD.MTBps));
         }
     }
 }
