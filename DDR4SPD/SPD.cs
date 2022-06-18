@@ -15,10 +15,7 @@ namespace DDR4XMPEditor.DDR4SPD
             public byte timebase;   // [0:1]: FTB, [2:3]: MTB
             public byte minCycleTime;
             public byte maxCycleTime;
-            public byte clSupported1; // 7 - 14
-            public byte clSupported2; // 15 - 22
-            public byte clSupported3; // 23 - 30
-            public byte clSupported4; // 31 - 36
+            public fixed byte clSupported[4]; // 0: 7-14, 1: 15-22, 2: 23-30, 3: 31-36
             public byte clTicks;
             public byte rcdTicks;
             public byte rpTicks;
@@ -137,6 +134,16 @@ namespace DDR4XMPEditor.DDR4SPD
         {
             get => rawSPD.maxCycleTime;
             set => rawSPD.maxCycleTime = value;
+        }
+
+        public unsafe byte[] GetClSupported()
+        {
+            return new byte[] { rawSPD.clSupported[0], rawSPD.clSupported[1], rawSPD.clSupported[2] };
+        }
+
+        public unsafe void SetClSupported(int index, byte value)
+        {
+            rawSPD.clSupported[index] = value;
         }
 
         public byte CLTicks
