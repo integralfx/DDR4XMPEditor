@@ -45,7 +45,7 @@ namespace DDR4XMPEditor.Pages
                 xmpVm1.Profile = SPD.XMP1;
                 for (int i = 0; i < xmpVm1.CLSupported.Count; ++i)
                 {
-                    xmpVm1.CLSupported[i] = xmpVm1.Profile.IsCLSupported(i);
+                    xmpVm1.CLSupported[i] = SPD.IsCLSupported(xmpVm1.Profile.GetClSupported(), i);
                 }
 
                 xmpVm2.IsEnabled = SPD.XMP2Enabled;
@@ -53,7 +53,7 @@ namespace DDR4XMPEditor.Pages
                 xmpVm2.Profile = SPD.XMP2;
                 for (int i = 0; i < xmpVm2.CLSupported.Count; ++i)
                 {
-                    xmpVm2.CLSupported[i] = xmpVm2.Profile.IsCLSupported(i);
+                    xmpVm2.CLSupported[i] = SPD.IsCLSupported(xmpVm2.Profile.GetClSupported(), i);
                 }
                 
                 BindNotifyPropertyChanged(xmpVm1);

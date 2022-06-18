@@ -32,7 +32,12 @@ namespace DDR4XMPEditor.Pages
             CLSupported = new BindingList<bool>(Enumerable.Range(0, 31).Select(n => false).ToList());
             CLSupported.ListChanged += (s, e) =>
             {
-                Profile.SetCLSupported(e.NewIndex, CLSupported[e.NewIndex]);
+                var clSupported = Profile.GetClSupported();
+                SPD.SetCLSupported(clSupported, e.NewIndex, CLSupported[e.NewIndex]);
+                for (int i = 0; i < clSupported.Length; ++i)
+                {
+                    Profile.SetClSupported(i, clSupported[i]);
+                }
                 Refresh();
             };
         }
