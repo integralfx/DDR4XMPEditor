@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:DDR4XMPEditor.Pages"
       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
       mc:Ignorable="d" 
-      d:DesignHeight="650" d:DesignWidth="360" IsEnabled="{Binding IsEnabled}">
+      d:DesignHeight="680" d:DesignWidth="360" IsEnabled="{Binding IsEnabled}">
 
     <StackPanel>
         <GroupBox Header="Density Downbin">

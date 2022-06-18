@@ -6,14 +6,14 @@
       xmlns:local="clr-namespace:DDR4XMPEditor.Pages"
       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
       mc:Ignorable="d" 
-      d:DesignHeight="650" d:DesignWidth="360">
+      d:DesignHeight="680" d:DesignWidth="360">
 
     <UserControl.Resources>
         <local:TicksToTimeConverter x:Key="TicksToTimeConverter"/>
     </UserControl.Resources>
 
     <StackPanel>
-        <GroupBox Header="Frequency and Voltage">
+        <GroupBox Header="Frequency">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="4*"/>
@@ -108,6 +108,10 @@
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
 
                 <Label Grid.Row="0" Grid.Column="0" Content="Name" FontWeight="Bold"/>
@@ -173,7 +177,7 @@
                 <TextBox Grid.Row="6" Grid.Column="3" IsReadOnly="True"
                          Text="{Binding Profile.RFC1Ticks, StringFormat={}{0:F3}ns, 
                                 Converter={StaticResource TicksToTimeConverter}}"/>
-                <xctk:IntegerUpDown Grid.Row="6" Grid.Column="4" Value="{Binding tRFC}" Minimum="0" 
+                <xctk:IntegerUpDown Grid.Row="6" Grid.Column="4" Value="{Binding tRFC1}" Minimum="0" 
                                     Maximum="1024"/>
 
                 <Label Grid.Row="7" Grid.Column="0" Content="tRFC2:"/>
@@ -225,6 +229,43 @@
                                 Converter={StaticResource TicksToTimeConverter}}"/>
                 <xctk:IntegerUpDown Grid.Row="11" Grid.Column="4" Value="{Binding tFAW}" Minimum="0" 
                                     Maximum="128"/>
+
+                <Label Grid.Row="12" Grid.Column="0" Content="tWR:"/>
+                <xctk:IntegerUpDown Grid.Row="12" Grid.Column="1" Value="{Binding Profile.WRTicks}" Minimum="0"
+                                    Maximum="255"/>
+                <xctk:IntegerUpDown Grid.Row="12" Grid.Column="2" IsEnabled="False"/>
+                <TextBox Grid.Row="12" Grid.Column="3" IsReadOnly="True"
+                         Text="{Binding tWRTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
+                <xctk:IntegerUpDown Grid.Row="12" Grid.Column="4" Value="{Binding tWR}" Minimum="0" 
+                                    Maximum="64"/>
+
+                <Label Grid.Row="13" Grid.Column="0" Content="tWTRS:"/>
+                <xctk:IntegerUpDown Grid.Row="13" Grid.Column="1" Value="{Binding Profile.WTRSTicks}" Minimum="0"
+                                    Maximum="255"/>
+                <xctk:IntegerUpDown Grid.Row="13" Grid.Column="2" IsEnabled="False"/>
+                <TextBox Grid.Row="13" Grid.Column="3" IsReadOnly="True"
+                         Text="{Binding tWTRSTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
+                <xctk:IntegerUpDown Grid.Row="13" Grid.Column="4" Value="{Binding tWTRS}" Minimum="0" 
+                                    Maximum="64"/>
+
+                <Label Grid.Row="14" Grid.Column="0" Content="tWTRL:"/>
+                <xctk:IntegerUpDown Grid.Row="14" Grid.Column="1" Value="{Binding Profile.WTRLTicks}" Minimum="0"
+                                    Maximum="255"/>
+                <xctk:IntegerUpDown Grid.Row="14" Grid.Column="2" IsEnabled="False"/>
+                <TextBox Grid.Row="14" Grid.Column="3" IsReadOnly="True"
+                         Text="{Binding tWTRLTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
+                <xctk:IntegerUpDown Grid.Row="14" Grid.Column="4" Value="{Binding tWTRL}" Minimum="0" 
+                                    Maximum="64"/>
+
+                <Label Grid.Row="15" Grid.Column="0" Content="tCCDL:"/>
+                <xctk:IntegerUpDown Grid.Row="15" Grid.Column="1" Value="{Binding Profile.CCDLTicks}" Minimum="0"
+                                    Maximum="255"/>
+                <xctk:IntegerUpDown Grid.Row="15" Grid.Column="2" Value="{Binding Profile.CCDLFC}" Minimum="-127"
+                                    Maximum="127"/>
+                <TextBox Grid.Row="15" Grid.Column="3" IsReadOnly="True"
+                         Text="{Binding tCCDLTime, StringFormat={}{0:F3}ns, Mode=OneWay}"/>
+                <xctk:IntegerUpDown Grid.Row="15" Grid.Column="4" Value="{Binding tCCDL}" Minimum="0" 
+                                    Maximum="64"/>
             </Grid>
         </GroupBox>
     </StackPanel>

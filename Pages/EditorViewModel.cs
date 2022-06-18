@@ -173,6 +173,14 @@ namespace DDR4XMPEditor.Pages
             vm.Profile.Bind(x => x.RRDLFC, (s, e) => vm.Refresh());
 
             vm.Profile.Bind(x => x.FAWTicks, (s, e) => vm.Refresh());
+
+            vm.Profile.Bind(x => x.WRTicks, (s, e) => vm.Refresh());
+
+            vm.Profile.Bind(x => x.WTRSTicks, (s, e) => vm.Refresh());
+            vm.Profile.Bind(x => x.WTRLTicks, (s, e) => vm.Refresh());
+
+            vm.Profile.Bind(x => x.CCDLTicks, (s, e) => vm.Refresh());
+            vm.Profile.Bind(x => x.CCDLFC, (s, e) => vm.Refresh());
         }
     }
 }

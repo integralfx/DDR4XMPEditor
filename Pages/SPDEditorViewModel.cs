@@ -108,7 +108,7 @@ namespace DDR4XMPEditor.Pages
                 int? ticks = DRAMTicksToMTBTicks(value);
                 if (ticks.HasValue)
                 {
-                    Profile.RASTicks = (byte)ticks.Value;
+                    Profile.RASTicks = ticks.Value;
                 }
             }
         }
@@ -234,6 +234,78 @@ namespace DDR4XMPEditor.Pages
                 }
             }
         }
+        public int? tWR
+        {
+            get => TimeToTicks(Profile?.WRTicks * SPD.MTBps);
+            set
+            {
+                if (Profile == null)
+                {
+                    return;
+                }
+
+                int? ticks = DRAMTicksToMTBTicks(value);
+                if (ticks.HasValue)
+                {
+                    Profile.WRTicks = (ushort)ticks.Value;
+                }
+            }
+        }
+        public double? tWRTime => Profile?.WRTicks * SPD.MTBps / 1000.0;
+        public int? tWTRS
+        {
+            get => TimeToTicks(Profile?.WTRSTicks * SPD.MTBps);
+            set
+            {
+                if (Profile == null)
+                {
+                    return;
+                }
+
+                int? ticks = DRAMTicksToMTBTicks(value);
+                if (ticks.HasValue)
+                {
+                    Profile.WTRSTicks = (ushort)ticks.Value;
+                }
+            }
+        }
+        public double? tWTRSTime => Profile?.WTRSTicks * SPD.MTBps / 1000.0;
+        public int? tWTRL
+        {
+            get => TimeToTicks(Profile?.WTRLTicks * SPD.MTBps);
+            set
+            {
+                if (Profile == null)
+                {
+                    return;
+                }
+
+                int? ticks = DRAMTicksToMTBTicks(value);
+                if (ticks.HasValue)
+                {
+                    Profile.WTRLTicks = (ushort)ticks.Value;
+                }
+            }
+        }
+        public double? tWTRLTime => Profile?.WTRLTicks * SPD.MTBps / 1000.0;
+        public int? tCCDL
+        {
+            get => TimeToTicks(Profile?.CCDLTicks * SPD.MTBps + Profile?.CCDLFC);
+            set
+            {
+                if (Profile == null)
+                {
+                    return;
+                }
+
+                int? ticks = DRAMTicksToMTBTicks(value);
+                if (ticks.HasValue)
+                {
+                    Profile.CCDLTicks = (byte)ticks.Value;
+                }
+            }
+        }
+        public double? tCCDLTime => (Profile?.CCDLTicks * SPD.MTBps + Profile?.CCDLFC) / 1000.0;
 
         /// <summary>
         /// Convert <paramref name="timeps"/> to DRAM ticks.
