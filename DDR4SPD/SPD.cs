@@ -1,5 +1,6 @@
 ﻿using Stylet;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -42,15 +43,15 @@ namespace DDR4XMPEditor.DDR4SPD
             public byte wtrsTicks;
             public byte wtrlTicks;
             public fixed byte unknown2[0x74 - 0x2E + 1];
-            public byte ccdlFc;
-            public byte rrdlFc;
-            public byte rrdsFc;
-            public byte rcFc;
-            public byte rpFc;
-            public byte rcdFc;
-            public byte clFc;
-            public byte maxCycleTimeFc;
-            public byte minCycleTimeFc;
+            public sbyte ccdlFc;
+            public sbyte rrdlFc;
+            public sbyte rrdsFc;
+            public sbyte rcFc;
+            public sbyte rpFc;
+            public sbyte rcdFc;
+            public sbyte clFc;
+            public sbyte maxCycleTimeFc;
+            public sbyte minCycleTimeFc;
             public byte crcLsb;
             public byte crcMsb;
             // Module specific section
@@ -130,6 +131,198 @@ namespace DDR4XMPEditor.DDR4SPD
         private static readonly int[] rowAddressBitsMap = new int[8] { 12, 13, 14, 15, 16, 17, 18, -1 };
         private static readonly int[] deviceWidthMap = new int[8] { 4, 8, 16, 32, -1, -1, -1, -1 };
         private static readonly int[] packageRanksMap = new int[8] { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+        public byte MinCycleTime
+        {
+            get => rawSpd.minCycleTime;
+            set => rawSpd.minCycleTime = value;
+        }
+
+        public byte MaxCycleTime
+        {
+            get => rawSpd.maxCycleTime;
+            set => rawSpd.maxCycleTime = value;
+        }
+
+        public byte CLTicks
+        {
+            get => rawSpd.clTicks;
+            set => rawSpd.clTicks = value;
+        }
+
+        public byte RCDTicks
+        {
+            get => rawSpd.rcdTicks;
+            set => rawSpd.rcdTicks = value;
+        }
+
+        public byte RPTicks
+        {
+            get => rawSpd.rpTicks;
+            set => rawSpd.rpTicks = value;
+        }
+
+        public int RASTicks
+        {
+            get => (rawSpd.rasRCUpperNibble & 0xF << 8) | rawSpd.rasTicks;
+            set
+            {
+                rawSpd.rasRCUpperNibble = (byte)((rawSpd.rasRCUpperNibble & 0xF0) | (value >> 8 & 0xF));
+                rawSpd.rasTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public int RCTicks
+        {
+            get => ((rawSpd.rasRCUpperNibble & 0xF0) << 4) | rawSpd.rcTicks;
+            set
+            {
+                rawSpd.rasRCUpperNibble = (byte)(((value & 0xF00) >> 4) | (rawSpd.rasRCUpperNibble & 0xF));
+                rawSpd.rcTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public ushort RFC1Ticks
+        {
+            get => (ushort)((rawSpd.rfc1MsbTicks << 8) | rawSpd.rfc1LsbTicks);
+            set
+            {
+                rawSpd.rfc1MsbTicks = (byte)(value >> 8);
+                rawSpd.rfc1LsbTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public ushort RFC2Ticks
+        {
+            get => (ushort)((rawSpd.rfc2MsbTicks << 8) | rawSpd.rfc2LsbTicks);
+            set
+            {
+                rawSpd.rfc2MsbTicks = (byte)(value >> 8);
+                rawSpd.rfc2LsbTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public ushort RFC4Ticks
+        {
+            get => (ushort)((rawSpd.rfc4MsbTicks << 8) | rawSpd.rfc4LsbTicks);
+            set
+            {
+                rawSpd.rfc4MsbTicks = (byte)(value >> 8);
+                rawSpd.rfc4LsbTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public int FAWTicks
+        {
+            get => ((rawSpd.fawUpperNibble & 0xF) << 8) | rawSpd.fawTicks;
+            set
+            {
+                rawSpd.fawUpperNibble = (byte)(rawSpd.fawUpperNibble & 0xF0 | value >> 8 & 0xF);
+                rawSpd.fawTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public byte RRDSTicks
+        {
+            get => rawSpd.rrdsTicks;
+            set => rawSpd.rrdsTicks = value;
+        }
+
+        public byte RRDLTicks
+        {
+            get => rawSpd.rrdlTicks;
+            set => rawSpd.rrdlTicks = value;
+        }
+
+        public byte CCDLTicks
+        {
+            get => rawSpd.ccdlTicks;
+            set => rawSpd.ccdlTicks = value;
+        }
+
+        public ushort WRTicks
+        {
+            get => (ushort)(((rawSpd.wrUpperNibble & 0xF) << 16) | rawSpd.wrTicks);
+            set
+            {
+                rawSpd.wrUpperNibble = (byte)((value >> 16) & 0xF);
+                rawSpd.wrTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public ushort WTRSTicks
+        {
+            get => (ushort)(((rawSpd.wtrUpperNibble & 0xF) << 16) | rawSpd.wtrsTicks);
+            set
+            {
+                rawSpd.wtrUpperNibble = (byte)((value >> 16) & 0xF);
+                rawSpd.wtrsTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public ushort WTRLTicks
+        {
+            get => (ushort)(((rawSpd.wtrUpperNibble & 0xF) << 16) | rawSpd.wtrlTicks);
+            set
+            {
+                rawSpd.wtrUpperNibble = (byte)((value >> 16) & 0xF);
+                rawSpd.wtrlTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public sbyte CCDLFC
+        {
+            get => rawSpd.ccdlFc;
+            set => rawSpd.ccdlFc = value;
+        }
+
+        public sbyte RRDLFC
+        {
+            get => rawSpd.rrdlFc;
+            set => rawSpd.rrdlFc = value;
+        }
+
+        public sbyte RRDSFC
+        {
+            get => rawSpd.rrdsFc;
+            set => rawSpd.rrdsFc = value;
+        }
+
+        public sbyte RCFC
+        {
+            get => rawSpd.rcFc;
+            set => rawSpd.rcFc = value;
+        }
+
+        public sbyte RPFC
+        {
+            get => rawSpd.rpFc;
+            set => rawSpd.rpFc = value;
+        }
+
+        public sbyte RCDFC
+        {
+            get => rawSpd.rcdFc;
+            set => rawSpd.rcdFc = value;
+        }
+
+        public sbyte CLFC
+        {
+            get => rawSpd.clFc;
+            set => rawSpd.clFc = value;
+        }
+
+        public sbyte MinCycleTimeFC
+        {
+            get => rawSpd.minCycleTimeFc;
+            set => SetAndNotify(ref rawSpd.minCycleTimeFc, value);
+        }
+
+        public sbyte MaxCycleTimeFC
+        {
+            get => rawSpd.maxCycleTimeFc;
+            set => SetAndNotify(ref rawSpd.maxCycleTimeFc, value);
+        }
 
         public Densities? Density
         {
@@ -299,13 +492,11 @@ namespace DDR4XMPEditor.DDR4SPD
                 }
             }
         }
-
         public XMP XMP1
         {
             get => xmp[0];
             set => xmp[0] = value;
         }
-        
         public XMP XMP2
         {
             get => xmp[1];
@@ -411,6 +602,70 @@ namespace DDR4XMPEditor.DDR4SPD
             }
 
             return null;
+        }
+
+        public static bool IsCLSupported(byte[] clSupported, int cl)
+        {
+            int[] mask = { 1, 2, 4, 8, 16, 32, 64, 128 };
+            if (cl >= 7 && cl <= 14)
+            {
+                return (clSupported[0] & mask[cl - 7]) == mask[cl - 7];
+            }
+            else if (cl >= 15 && cl <= 22)
+            {
+                return (clSupported[1] & mask[cl - 15]) == mask[cl - 15];
+            }
+            else if (cl >= 23 && cl <= 30)
+            {
+                return (clSupported[2] & mask[cl - 23]) == mask[cl - 23];
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static void SetCLSupported(byte[] clSupported, int cl, bool supported)
+        {
+            if (cl < 7 || cl > 30)
+            {
+                return;
+            }
+
+            int[] mask = { 1, 2, 4, 8, 16, 32, 64, 128 };
+            if (cl >= 7 && cl <= 14)
+            {
+                if (supported)
+                {
+                    clSupported[0] |= (byte)mask[cl - 7];
+                }
+                else
+                {
+                    clSupported[0] &= (byte)~mask[cl - 7];
+                }
+            }
+            else if (cl >= 15 && cl <= 22)
+            {
+                if (supported)
+                {
+                    clSupported[1] |= (byte)mask[cl - 15];
+                }
+                else
+                {
+                    clSupported[1] &= (byte)~mask[cl - 15];
+                }
+            }
+            else if (cl >= 23 && cl <= 30)
+            {
+                if (supported)
+                {
+                    clSupported[2] |= (byte)mask[cl - 23];
+                }
+                else
+                {
+                    clSupported[2] &= (byte)~mask[cl - 23];
+                }
+            }
         }
 
         private void ParseXMP(byte[] bytes)
