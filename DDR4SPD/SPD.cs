@@ -1,6 +1,5 @@
 ﻿using Stylet;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -10,7 +9,7 @@ namespace DDR4XMPEditor.DDR4SPD
     public class SPD : PropertyChangedBase
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        private unsafe struct RawSpd
+        private unsafe struct RawSPD
         {
             public fixed byte unknown1[0x10 + 1];
             public byte timebase;   // [0:1]: FTB, [2:3]: MTB
@@ -87,17 +86,13 @@ namespace DDR4XMPEditor.DDR4SPD
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        private struct XMPHeader
+        private unsafe struct XMPHeader
         {
             public byte magic1;
             public byte magic2;
             public byte profileEnabled; // bit 0: profile 1 enabled, bit 1: profile 2 enabled
             public byte version;
-            public byte unknown1;
-            public byte unknown2;
-            public byte unknown3;
-            public byte unknown4;
-            public byte reserved;
+            public fixed byte unknown[5];
         };
 
         public static readonly byte[] HeaderMagic = { 0x0C, 0x4A };
@@ -108,7 +103,7 @@ namespace DDR4XMPEditor.DDR4SPD
         public const int MTBps = 125;  // Medium timebase in picoseconds
 
         private byte[] rawSpdBytes = new byte[SpdSize];
-        private RawSpd rawSpd;
+        private RawSPD rawSPD;
         private XMPHeader xmpHeader;
         private readonly XMP[] xmp = new XMP[2];
 
@@ -134,194 +129,194 @@ namespace DDR4XMPEditor.DDR4SPD
 
         public byte MinCycleTime
         {
-            get => rawSpd.minCycleTime;
-            set => rawSpd.minCycleTime = value;
+            get => rawSPD.minCycleTime;
+            set => rawSPD.minCycleTime = value;
         }
 
         public byte MaxCycleTime
         {
-            get => rawSpd.maxCycleTime;
-            set => rawSpd.maxCycleTime = value;
+            get => rawSPD.maxCycleTime;
+            set => rawSPD.maxCycleTime = value;
         }
 
         public byte CLTicks
         {
-            get => rawSpd.clTicks;
-            set => rawSpd.clTicks = value;
+            get => rawSPD.clTicks;
+            set => rawSPD.clTicks = value;
         }
 
         public byte RCDTicks
         {
-            get => rawSpd.rcdTicks;
-            set => rawSpd.rcdTicks = value;
+            get => rawSPD.rcdTicks;
+            set => rawSPD.rcdTicks = value;
         }
 
         public byte RPTicks
         {
-            get => rawSpd.rpTicks;
-            set => rawSpd.rpTicks = value;
+            get => rawSPD.rpTicks;
+            set => rawSPD.rpTicks = value;
         }
 
         public int RASTicks
         {
-            get => (rawSpd.rasRCUpperNibble & 0xF << 8) | rawSpd.rasTicks;
+            get => (rawSPD.rasRCUpperNibble & 0xF << 8) | rawSPD.rasTicks;
             set
             {
-                rawSpd.rasRCUpperNibble = (byte)((rawSpd.rasRCUpperNibble & 0xF0) | (value >> 8 & 0xF));
-                rawSpd.rasTicks = (byte)(value & 0xFF);
+                rawSPD.rasRCUpperNibble = (byte)((rawSPD.rasRCUpperNibble & 0xF0) | (value >> 8 & 0xF));
+                rawSPD.rasTicks = (byte)(value & 0xFF);
             }
         }
 
         public int RCTicks
         {
-            get => ((rawSpd.rasRCUpperNibble & 0xF0) << 4) | rawSpd.rcTicks;
+            get => ((rawSPD.rasRCUpperNibble & 0xF0) << 4) | rawSPD.rcTicks;
             set
             {
-                rawSpd.rasRCUpperNibble = (byte)(((value & 0xF00) >> 4) | (rawSpd.rasRCUpperNibble & 0xF));
-                rawSpd.rcTicks = (byte)(value & 0xFF);
+                rawSPD.rasRCUpperNibble = (byte)(((value & 0xF00) >> 4) | (rawSPD.rasRCUpperNibble & 0xF));
+                rawSPD.rcTicks = (byte)(value & 0xFF);
             }
         }
 
         public ushort RFC1Ticks
         {
-            get => (ushort)((rawSpd.rfc1MsbTicks << 8) | rawSpd.rfc1LsbTicks);
+            get => (ushort)((rawSPD.rfc1MsbTicks << 8) | rawSPD.rfc1LsbTicks);
             set
             {
-                rawSpd.rfc1MsbTicks = (byte)(value >> 8);
-                rawSpd.rfc1LsbTicks = (byte)(value & 0xFF);
+                rawSPD.rfc1MsbTicks = (byte)(value >> 8);
+                rawSPD.rfc1LsbTicks = (byte)(value & 0xFF);
             }
         }
 
         public ushort RFC2Ticks
         {
-            get => (ushort)((rawSpd.rfc2MsbTicks << 8) | rawSpd.rfc2LsbTicks);
+            get => (ushort)((rawSPD.rfc2MsbTicks << 8) | rawSPD.rfc2LsbTicks);
             set
             {
-                rawSpd.rfc2MsbTicks = (byte)(value >> 8);
-                rawSpd.rfc2LsbTicks = (byte)(value & 0xFF);
+                rawSPD.rfc2MsbTicks = (byte)(value >> 8);
+                rawSPD.rfc2LsbTicks = (byte)(value & 0xFF);
             }
         }
 
         public ushort RFC4Ticks
         {
-            get => (ushort)((rawSpd.rfc4MsbTicks << 8) | rawSpd.rfc4LsbTicks);
+            get => (ushort)((rawSPD.rfc4MsbTicks << 8) | rawSPD.rfc4LsbTicks);
             set
             {
-                rawSpd.rfc4MsbTicks = (byte)(value >> 8);
-                rawSpd.rfc4LsbTicks = (byte)(value & 0xFF);
+                rawSPD.rfc4MsbTicks = (byte)(value >> 8);
+                rawSPD.rfc4LsbTicks = (byte)(value & 0xFF);
             }
         }
 
         public int FAWTicks
         {
-            get => ((rawSpd.fawUpperNibble & 0xF) << 8) | rawSpd.fawTicks;
+            get => ((rawSPD.fawUpperNibble & 0xF) << 8) | rawSPD.fawTicks;
             set
             {
-                rawSpd.fawUpperNibble = (byte)(rawSpd.fawUpperNibble & 0xF0 | value >> 8 & 0xF);
-                rawSpd.fawTicks = (byte)(value & 0xFF);
+                rawSPD.fawUpperNibble = (byte)(rawSPD.fawUpperNibble & 0xF0 | value >> 8 & 0xF);
+                rawSPD.fawTicks = (byte)(value & 0xFF);
             }
         }
 
         public byte RRDSTicks
         {
-            get => rawSpd.rrdsTicks;
-            set => rawSpd.rrdsTicks = value;
+            get => rawSPD.rrdsTicks;
+            set => rawSPD.rrdsTicks = value;
         }
 
         public byte RRDLTicks
         {
-            get => rawSpd.rrdlTicks;
-            set => rawSpd.rrdlTicks = value;
+            get => rawSPD.rrdlTicks;
+            set => rawSPD.rrdlTicks = value;
         }
 
         public byte CCDLTicks
         {
-            get => rawSpd.ccdlTicks;
-            set => rawSpd.ccdlTicks = value;
+            get => rawSPD.ccdlTicks;
+            set => rawSPD.ccdlTicks = value;
         }
 
         public ushort WRTicks
         {
-            get => (ushort)(((rawSpd.wrUpperNibble & 0xF) << 16) | rawSpd.wrTicks);
+            get => (ushort)(((rawSPD.wrUpperNibble & 0xF) << 16) | rawSPD.wrTicks);
             set
             {
-                rawSpd.wrUpperNibble = (byte)((value >> 16) & 0xF);
-                rawSpd.wrTicks = (byte)(value & 0xFF);
+                rawSPD.wrUpperNibble = (byte)((value >> 16) & 0xF);
+                rawSPD.wrTicks = (byte)(value & 0xFF);
             }
         }
 
         public ushort WTRSTicks
         {
-            get => (ushort)(((rawSpd.wtrUpperNibble & 0xF) << 16) | rawSpd.wtrsTicks);
+            get => (ushort)(((rawSPD.wtrUpperNibble & 0xF) << 16) | rawSPD.wtrsTicks);
             set
             {
-                rawSpd.wtrUpperNibble = (byte)((value >> 16) & 0xF);
-                rawSpd.wtrsTicks = (byte)(value & 0xFF);
+                rawSPD.wtrUpperNibble = (byte)((value >> 16) & 0xF);
+                rawSPD.wtrsTicks = (byte)(value & 0xFF);
             }
         }
 
         public ushort WTRLTicks
         {
-            get => (ushort)(((rawSpd.wtrUpperNibble & 0xF) << 16) | rawSpd.wtrlTicks);
+            get => (ushort)(((rawSPD.wtrUpperNibble & 0xF) << 16) | rawSPD.wtrlTicks);
             set
             {
-                rawSpd.wtrUpperNibble = (byte)((value >> 16) & 0xF);
-                rawSpd.wtrlTicks = (byte)(value & 0xFF);
+                rawSPD.wtrUpperNibble = (byte)((value >> 16) & 0xF);
+                rawSPD.wtrlTicks = (byte)(value & 0xFF);
             }
         }
 
         public sbyte CCDLFC
         {
-            get => rawSpd.ccdlFc;
-            set => rawSpd.ccdlFc = value;
+            get => rawSPD.ccdlFc;
+            set => rawSPD.ccdlFc = value;
         }
 
         public sbyte RRDLFC
         {
-            get => rawSpd.rrdlFc;
-            set => rawSpd.rrdlFc = value;
+            get => rawSPD.rrdlFc;
+            set => rawSPD.rrdlFc = value;
         }
 
         public sbyte RRDSFC
         {
-            get => rawSpd.rrdsFc;
-            set => rawSpd.rrdsFc = value;
+            get => rawSPD.rrdsFc;
+            set => rawSPD.rrdsFc = value;
         }
 
         public sbyte RCFC
         {
-            get => rawSpd.rcFc;
-            set => rawSpd.rcFc = value;
+            get => rawSPD.rcFc;
+            set => rawSPD.rcFc = value;
         }
 
         public sbyte RPFC
         {
-            get => rawSpd.rpFc;
-            set => rawSpd.rpFc = value;
+            get => rawSPD.rpFc;
+            set => rawSPD.rpFc = value;
         }
 
         public sbyte RCDFC
         {
-            get => rawSpd.rcdFc;
-            set => rawSpd.rcdFc = value;
+            get => rawSPD.rcdFc;
+            set => rawSPD.rcdFc = value;
         }
 
         public sbyte CLFC
         {
-            get => rawSpd.clFc;
-            set => rawSpd.clFc = value;
+            get => rawSPD.clFc;
+            set => rawSPD.clFc = value;
         }
 
         public sbyte MinCycleTimeFC
         {
-            get => rawSpd.minCycleTimeFc;
-            set => SetAndNotify(ref rawSpd.minCycleTimeFc, value);
+            get => rawSPD.minCycleTimeFc;
+            set => SetAndNotify(ref rawSPD.minCycleTimeFc, value);
         }
 
         public sbyte MaxCycleTimeFC
         {
-            get => rawSpd.maxCycleTimeFc;
-            set => SetAndNotify(ref rawSpd.maxCycleTimeFc, value);
+            get => rawSPD.maxCycleTimeFc;
+            set => SetAndNotify(ref rawSPD.maxCycleTimeFc, value);
         }
 
         public Densities? Density
@@ -444,20 +439,20 @@ namespace DDR4XMPEditor.DDR4SPD
 
         public ushort CRC1
         {
-            get => (ushort)((rawSpd.crcMsb << 8) | rawSpd.crcLsb);
+            get => (ushort)((rawSPD.crcMsb << 8) | rawSPD.crcLsb);
             set
             {
-                rawSpd.crcLsb = (byte)(value & 0xFF);
-                rawSpd.crcMsb = (byte)((value >> 8) & 0xFF);
+                rawSPD.crcLsb = (byte)(value & 0xFF);
+                rawSPD.crcMsb = (byte)((value >> 8) & 0xFF);
             }
         }
         public ushort CRC2
         {
-            get => (ushort)((rawSpd.mspCrcMsb << 8) | (rawSpd.mspCrcLsb));
+            get => (ushort)((rawSPD.mspCrcMsb << 8) | (rawSPD.mspCrcLsb));
             set
             {
-                rawSpd.mspCrcLsb = (byte)(value & 0xFF);
-                rawSpd.mspCrcMsb = (byte)((value >> 8) & 0xFF);
+                rawSPD.mspCrcLsb = (byte)(value & 0xFF);
+                rawSPD.mspCrcMsb = (byte)((value >> 8) & 0xFF);
             }
         }
 
@@ -568,7 +563,7 @@ namespace DDR4XMPEditor.DDR4SPD
 
                     // Read into RawSpd struct.
                     var handle = GCHandle.Alloc(spd.rawSpdBytes, GCHandleType.Pinned);
-                    spd.rawSpd = Marshal.PtrToStructure<RawSpd>(handle.AddrOfPinnedObject());
+                    spd.rawSPD = Marshal.PtrToStructure<RawSPD>(handle.AddrOfPinnedObject());
                     handle.Free();
 
                     // Read the XMP header.
