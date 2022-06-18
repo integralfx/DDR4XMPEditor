@@ -5,8 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:DDR4XMPEditor.Pages"
       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-      mc:Ignorable="d" 
-      d:DesignHeight="680" d:DesignWidth="360">
+      mc:Ignorable="d">
 
     <UserControl.Resources>
         <local:TicksToTimeConverter x:Key="TicksToTimeConverter"/>
