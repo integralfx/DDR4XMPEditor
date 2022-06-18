@@ -8,7 +8,7 @@ namespace DDR4XMPEditor.DDR4SPD
     public class XMP : PropertyChangedBase
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        struct RawXMP
+        private struct RawXMP
         {
             public byte voltage;
             public byte unknown1;

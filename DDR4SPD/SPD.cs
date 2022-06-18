@@ -8,6 +8,64 @@ namespace DDR4XMPEditor.DDR4SPD
 {
     public class SPD : PropertyChangedBase
     {
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private unsafe struct RawSpd
+        {
+            public fixed byte unknown1[0x11];
+            public byte timebase;   // [0:1]: FTB, [2:3]: MTB
+            public byte minCycleTime;
+            public byte maxCycleTime;
+            public byte clSupported1; // 7 - 14
+            public byte clSupported2; // 15 - 22
+            public byte clSupported3; // 23 - 30
+            public byte clSupported4; // 31 - 36
+            public byte clTicks;
+            public byte rcdTicks;
+            public byte rpTicks;
+            public byte rasRCUpperNibble; // [0:3]: tRAS upper nibble, [4:7]: tRC upper nibble
+            public byte rasTicks;
+            public byte rcTicks;
+            public byte rfc1LsbTicks;
+            public byte rfc1MsbTicks;
+            public byte rfc2LsbTicks;
+            public byte rfc2MsbTicks;
+            public byte rfc4LsbTicks;
+            public byte rfc4MsbTicks;
+            public byte fawUpperNibble; // [0:3] tFAW upper nibble
+            public byte fawTicks;
+            public byte rrdsTicks;
+            public byte rrdlTicks;
+            public byte ccdlTicks;
+            public byte wrUpperNibble;
+            public byte wrTicks;
+            public byte wtrUpperNibble;
+            public byte wtrsTicks;
+            public byte wtrlTicks;
+            public fixed byte unknown2[0x74 - 0x2E + 1];
+            public byte ccdlFc;
+            public byte rrdlFc;
+            public byte rrdsFc;
+            public byte rcFc;
+            public byte rpFc;
+            public byte rcdFc;
+            public byte clFc;
+            public byte maxCycleTimeFc;
+            public byte minCycleTimeFc;
+            public byte crcLsb;
+            public byte crcMsb;
+            public fixed byte unknown3[0x13F - 0x80 + 1];
+            public fixed byte manufacturer[2];
+            public byte manufacturingLocation;
+            public byte manufacturingYear;
+            public byte manufacturingWeek;
+            public fixed byte serialNumber[0x148 - 0x145 + 1];
+            public fixed byte partNumber[0x15C - 0x149 + 1];
+            public byte revisionCode;
+            public fixed byte manufacturerIdCode[2];
+            public byte dramStepping;
+            public fixed byte unknown4[0x17F - 0x161 + 1];
+        }
+
         public enum Densities
         {
             _256Mb,
@@ -24,7 +82,7 @@ namespace DDR4XMPEditor.DDR4SPD
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        struct XMPHeader
+        private struct XMPHeader
         {
             public byte magic1;
             public byte magic2;
@@ -43,7 +101,8 @@ namespace DDR4XMPEditor.DDR4SPD
         public const int TotalSize = 512;
         public const int SpdSize = 0x180;
 
-        private byte[] rawSpd = new byte[SpdSize];
+        private byte[] rawSpdBytes = new byte[SpdSize];
+        private RawSpd rawSpd;
         private XMPHeader xmpHeader;
         private readonly XMP[] xmp = new XMP[2];
 
@@ -71,7 +130,7 @@ namespace DDR4XMPEditor.DDR4SPD
         {
             get
             {
-                int index = rawSpd[4] & 0xF;
+                int index = rawSpdBytes[4] & 0xF;
                 if (index >= (int)Densities.Count)
                 {
                     return null;
@@ -83,85 +142,85 @@ namespace DDR4XMPEditor.DDR4SPD
                 if (value.HasValue)
                 {
                     int index = Array.FindIndex(densityMap, d => d == value.Value);
-                    rawSpd[4] = (byte)((rawSpd[4] & 0xF0) | (index & 0xF));
+                    rawSpdBytes[4] = (byte)((rawSpdBytes[4] & 0xF0) | (index & 0xF));
                 }
             }
         }
 
         public int Banks
         {
-            get => bankAddressBitsMap[(rawSpd[4] >> 4) & 0x3];
+            get => bankAddressBitsMap[(rawSpdBytes[4] >> 4) & 0x3];
             set
             {
                 int index = Array.IndexOf(bankAddressBitsMap, value);
                 if (index != -1 && value != -1)
                 {
-                    rawSpd[4] = (byte)((rawSpd[4] & 0xC0) | (index << 4) | (rawSpd[4] & 0xF));
+                    rawSpdBytes[4] = (byte)((rawSpdBytes[4] & 0xC0) | (index << 4) | (rawSpdBytes[4] & 0xF));
                 }
             }
         }
 
         public int BankGroups
         {
-            get => bankGroupBitsMap[(rawSpd[4] >> 6) & 0x3];
+            get => bankGroupBitsMap[(rawSpdBytes[4] >> 6) & 0x3];
             set
             {
                 int index = Array.IndexOf(bankGroupBitsMap, value);
                 if (index != -1 && value != -1)
                 {
-                    rawSpd[4] = (byte)((index << 6) | (rawSpd[4] & 0x3F));
+                    rawSpdBytes[4] = (byte)((index << 6) | (rawSpdBytes[4] & 0x3F));
                 }
             }
         }
 
         public int ColumnAddresses
         {
-            get => columnAddressBitsMap[rawSpd[5] & 0x7];
+            get => columnAddressBitsMap[rawSpdBytes[5] & 0x7];
             set
             {
                 int index = Array.IndexOf(columnAddressBitsMap, value);
                 if (index != -1 && value != -1)
                 {
-                    rawSpd[5] = (byte)((rawSpd[5] & 0xF8) | (index & 0x7));
+                    rawSpdBytes[5] = (byte)((rawSpdBytes[5] & 0xF8) | (index & 0x7));
                 }
             }
         }
 
         public int RowAddresses
         {
-            get => rowAddressBitsMap[(rawSpd[5] >> 3) & 0x7];
+            get => rowAddressBitsMap[(rawSpdBytes[5] >> 3) & 0x7];
             set
             {
                 int index = Array.IndexOf(rowAddressBitsMap, value);
                 if (index != -1 && value != -1)
                 {
-                    rawSpd[5] = (byte)((rawSpd[5] & 0xC0) | (index << 3) | (rawSpd[5] & 0x7));
+                    rawSpdBytes[5] = (byte)((rawSpdBytes[5] & 0xC0) | (index << 3) | (rawSpdBytes[5] & 0x7));
                 }
             }
         }
 
         public int DeviceWidth
         {
-            get => deviceWidthMap[rawSpd[0xC] & 0b111];
+            get => deviceWidthMap[rawSpdBytes[0xC] & 0b111];
             set
             {
                 int index = Array.IndexOf(deviceWidthMap, value);
                 if (index != -1 && value != -1)
                 {
-                    rawSpd[0xC] = (byte)((rawSpd[0xC] & 0b11111000) | index);
+                    rawSpdBytes[0xC] = (byte)((rawSpdBytes[0xC] & 0b11111000) | index);
                 }
             }
         }
 
         public int PackageRanks
         {
-            get => packageRanksMap[(rawSpd[0xC] >> 3) & 0b111];
+            get => packageRanksMap[(rawSpdBytes[0xC] >> 3) & 0b111];
             set
             {
                 int index = Array.IndexOf(packageRanksMap, value);
                 if (index != -1 && value != -1)
                 {
-                    rawSpd[0xC] = (byte)((rawSpd[0xC] & 0b11000000) | (index << 3) | (rawSpd[0xC] & 0b111));
+                    rawSpdBytes[0xC] = (byte)((rawSpdBytes[0xC] & 0b11000000) | (index << 3) | (rawSpdBytes[0xC] & 0b111));
                 }
             }
         }
@@ -171,36 +230,36 @@ namespace DDR4XMPEditor.DDR4SPD
         /// </summary>
         public bool RankMix
         {
-            get => (rawSpd[0xC] & 0b01000000) == 0b01000000;
+            get => (rawSpdBytes[0xC] & 0b01000000) == 0b01000000;
             set
             {
                 if (value)
                 {
-                    rawSpd[0xC] |= 0b01000000;
+                    rawSpdBytes[0xC] |= 0b01000000;
                 }
                 else
                 {
-                    rawSpd[0xC] &= 0b10111111;
+                    rawSpdBytes[0xC] &= 0b10111111;
                 }
             }
         }
 
         public ushort CRC1
         {
-            get => (ushort)((rawSpd[0x7F] << 8) | (rawSpd[0x7E]));
+            get => (ushort)((rawSpdBytes[0x7F] << 8) | (rawSpdBytes[0x7E]));
             set
             {
-                rawSpd[0x7E] = (byte)(value & 0xFF);
-                rawSpd[0x7F] = (byte)((value >> 8) & 0xFF);
+                rawSpdBytes[0x7E] = (byte)(value & 0xFF);
+                rawSpdBytes[0x7F] = (byte)((value >> 8) & 0xFF);
             }
         }
         public ushort CRC2
         {
-            get => (ushort)((rawSpd[0xFF] << 8) | (rawSpd[0xFE]));
+            get => (ushort)((rawSpdBytes[0xFF] << 8) | (rawSpdBytes[0xFE]));
             set
             {
-                rawSpd[0xFE] = (byte)(value & 0xFF);
-                rawSpd[0xFF] = (byte)((value >> 8) & 0xFF);
+                rawSpdBytes[0xFE] = (byte)(value & 0xFF);
+                rawSpdBytes[0xFF] = (byte)((value >> 8) & 0xFF);
             }
         }
 
@@ -250,16 +309,16 @@ namespace DDR4XMPEditor.DDR4SPD
 
         public void UpdateCrc()
         {
-            CRC1 = Crc16(rawSpd.Take(0x7D + 1).ToArray());
-            CRC2 = Crc16(rawSpd.Skip(0x80).Take(0xFD - 0x80 + 1).ToArray());
+            CRC1 = Crc16(rawSpdBytes.Take(0x7D + 1).ToArray());
+            CRC2 = Crc16(rawSpdBytes.Skip(0x80).Take(0xFD - 0x80 + 1).ToArray());
         }
 
         public byte[] GetBytes()
         {
             int startIndex = 0;
             byte[] bytes = new byte[TotalSize];
-            Array.Copy(rawSpd, bytes, rawSpd.Length);
-            startIndex += rawSpd.Length;
+            Array.Copy(rawSpdBytes, bytes, rawSpdBytes.Length);
+            startIndex += rawSpdBytes.Length;
 
             // Convert header to byte array.
             IntPtr ptr = IntPtr.Zero;
@@ -308,11 +367,16 @@ namespace DDR4XMPEditor.DDR4SPD
                 {
                     SPD spd = new SPD
                     {
-                        rawSpd = bytes.Take(SpdSize).ToArray()
+                        rawSpdBytes = bytes.Take(SpdSize).ToArray()
                     };
 
-                    // Read the header.
-                    var handle = GCHandle.Alloc(xmpBytes, GCHandleType.Pinned);
+                    // Read into RawSpd struct.
+                    var handle = GCHandle.Alloc(spd.rawSpdBytes, GCHandleType.Pinned);
+                    spd.rawSpd = Marshal.PtrToStructure<RawSpd>(handle.AddrOfPinnedObject());
+                    handle.Free();
+
+                    // Read the XMP header.
+                    handle = GCHandle.Alloc(xmpBytes, GCHandleType.Pinned);
                     spd.xmpHeader = Marshal.PtrToStructure<XMPHeader>(handle.AddrOfPinnedObject());
                     handle.Free();
 
