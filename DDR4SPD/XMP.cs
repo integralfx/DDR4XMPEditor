@@ -8,7 +8,7 @@ namespace DDR4XMPEditor.DDR4SPD
     public class XMP : PropertyChangedBase
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        private unsafe struct RawXMP
+        private unsafe struct RawXmp
         {
             public byte voltage;
             public fixed byte unknown1[2];
@@ -40,7 +40,7 @@ namespace DDR4XMPEditor.DDR4SPD
         }
 
         public const int Size = 0x2F;
-        private RawXMP rawXMP;
+        private RawXmp rawXmp;
 
         /// <summary>
         /// The voltage in hundredths of a volt.
@@ -49,8 +49,8 @@ namespace DDR4XMPEditor.DDR4SPD
         {
             get
             {
-                int hundredths = rawXMP.voltage & 0x7F;
-                int ones = (rawXMP.voltage & 0x80) >> 7;
+                int hundredths = rawXmp.voltage & 0x7F;
+                int ones = (rawXmp.voltage & 0x80) >> 7;
                 return (uint)(ones * 100 + hundredths);
             }
             set
@@ -63,144 +63,144 @@ namespace DDR4XMPEditor.DDR4SPD
                 bool ones = value >= 100;
                 // Hundredths place can go up to 0xFF (127).
                 uint hundredths = value >= 100 ? value - 100 : value & 0x7F;
-                rawXMP.voltage = (byte)((ones ? 0x80u : 0x00u) | hundredths);
+                rawXmp.voltage = (byte)((ones ? 0x80u : 0x00u) | hundredths);
             }
         }
 
         public byte SDRAMCycleTicks
         {
-            get => rawXMP.sdramCycleTicks;
-            set => rawXMP.sdramCycleTicks = value;
+            get => rawXmp.sdramCycleTicks;
+            set => rawXmp.sdramCycleTicks = value;
         }
 
         public unsafe byte[] GetClSupported()
         {
-            return new byte[] { rawXMP.clSupported[0], rawXMP.clSupported[1], rawXMP.clSupported[2] };
+            return new byte[] { rawXmp.clSupported[0], rawXmp.clSupported[1], rawXmp.clSupported[2] };
         }
 
         public unsafe void SetClSupported(int index, byte value)
         {
-            rawXMP.clSupported[index] = value;
+            rawXmp.clSupported[index] = value;
         }
 
         public byte CLTicks
         {
-            get => rawXMP.clTicks;
-            set => rawXMP.clTicks = value;
+            get => rawXmp.clTicks;
+            set => rawXmp.clTicks = value;
         }
 
         public byte RCDTicks
         {
-            get => rawXMP.rcdTicks;
-            set => rawXMP.rcdTicks = value;
+            get => rawXmp.rcdTicks;
+            set => rawXmp.rcdTicks = value;
         }
 
         public byte RPTicks
         {
-            get => rawXMP.rpTicks;
-            set => rawXMP.rpTicks = value;
+            get => rawXmp.rpTicks;
+            set => rawXmp.rpTicks = value;
         }
 
         public int RASTicks
         {
-            get => (rawXMP.rasRCUpperNibble & 0xF << 8) | rawXMP.rasTicks;
+            get => (rawXmp.rasRCUpperNibble & 0xF << 8) | rawXmp.rasTicks;
             set
             {
-                rawXMP.rasRCUpperNibble = (byte)((rawXMP.rasRCUpperNibble & 0xF0) | (value >> 8 & 0xF));
-                rawXMP.rasTicks = (byte)(value & 0xFF);
+                rawXmp.rasRCUpperNibble = (byte)((rawXmp.rasRCUpperNibble & 0xF0) | (value >> 8 & 0xF));
+                rawXmp.rasTicks = (byte)(value & 0xFF);
             }
         }
 
         public int RCTicks
         {
-            get => ((rawXMP.rasRCUpperNibble & 0xF0) << 4) | rawXMP.rcTicks;
+            get => ((rawXmp.rasRCUpperNibble & 0xF0) << 4) | rawXmp.rcTicks;
             set
             {
-                rawXMP.rasRCUpperNibble = (byte)(((value & 0xF00) >> 4) | (rawXMP.rasRCUpperNibble & 0xF));
-                rawXMP.rcTicks = (byte)(value & 0xFF);
+                rawXmp.rasRCUpperNibble = (byte)(((value & 0xF00) >> 4) | (rawXmp.rasRCUpperNibble & 0xF));
+                rawXmp.rcTicks = (byte)(value & 0xFF);
             }
         }
 
         public ushort RFCTicks
         {
-            get => rawXMP.rfcTicks;
-            set => rawXMP.rfcTicks = value;
+            get => rawXmp.rfcTicks;
+            set => rawXmp.rfcTicks = value;
         }
 
         public ushort RFC2Ticks
         {
-            get => rawXMP.rfc2Ticks;
-            set => rawXMP.rfc2Ticks = value;
+            get => rawXmp.rfc2Ticks;
+            set => rawXmp.rfc2Ticks = value;
         }
 
         public ushort RFC4Ticks
         {
-            get => rawXMP.rfc4Ticks;
-            set => rawXMP.rfc4Ticks = value;
+            get => rawXmp.rfc4Ticks;
+            set => rawXmp.rfc4Ticks = value;
         }
 
         public int FAWTicks
         {
-            get => ((rawXMP.fawUpperNibble & 0xF) << 8) | rawXMP.fawTicks;
+            get => ((rawXmp.fawUpperNibble & 0xF) << 8) | rawXmp.fawTicks;
             set
             {
-                rawXMP.fawUpperNibble = (byte)(rawXMP.fawUpperNibble & 0xF0 | value >> 8 & 0xF);
-                rawXMP.fawTicks = (byte)(value & 0xFF);
+                rawXmp.fawUpperNibble = (byte)(rawXmp.fawUpperNibble & 0xF0 | value >> 8 & 0xF);
+                rawXmp.fawTicks = (byte)(value & 0xFF);
             }
         }
 
         public byte RRDSTicks
         {
-            get => rawXMP.rrdsTicks;
-            set => rawXMP.rrdsTicks = value;
+            get => rawXmp.rrdsTicks;
+            set => rawXmp.rrdsTicks = value;
         }
 
         public byte RRDLTicks
         {
-            get => rawXMP.rrdlTicks;
-            set => rawXMP.rrdlTicks = value;
+            get => rawXmp.rrdlTicks;
+            set => rawXmp.rrdlTicks = value;
         }
 
         public sbyte RRDLFC
         {
-            get => rawXMP.rrdlFc;
-            set => rawXMP.rrdlFc = value;
+            get => rawXmp.rrdlFc;
+            set => rawXmp.rrdlFc = value;
         }
 
         public sbyte RRDSFC
         {
-            get => rawXMP.rrdsFc;
-            set => rawXMP.rrdsFc = value;
+            get => rawXmp.rrdsFc;
+            set => rawXmp.rrdsFc = value;
         }
 
         public sbyte RCFC
         {
-            get => rawXMP.rcFc;
-            set => rawXMP.rcFc = value;
+            get => rawXmp.rcFc;
+            set => rawXmp.rcFc = value;
         }
 
         public sbyte RPFC
         {
-            get => rawXMP.rpFc;
-            set => rawXMP.rpFc = value;
+            get => rawXmp.rpFc;
+            set => rawXmp.rpFc = value;
         }
 
         public sbyte RCDFC
         {
-            get => rawXMP.rcdFc;
-            set => rawXMP.rcdFc = value;
+            get => rawXmp.rcdFc;
+            set => rawXmp.rcdFc = value;
         }
 
         public sbyte CLFC
         {
-            get => rawXMP.clFc;
-            set => rawXMP.clFc = value;
+            get => rawXmp.clFc;
+            set => rawXmp.clFc = value;
         }
 
         public sbyte SDRAMCycleTimeFC
         {
-            get => rawXMP.sdramCycleTimeFc;
-            set => SetAndNotify(ref rawXMP.sdramCycleTimeFc, value);
+            get => rawXmp.sdramCycleTimeFc;
+            set => SetAndNotify(ref rawXmp.sdramCycleTimeFc, value);
         }
 
         public byte[] GetBytes()
@@ -209,10 +209,10 @@ namespace DDR4XMPEditor.DDR4SPD
             byte[] bytes = null;
             try
             {
-                var size = Marshal.SizeOf<RawXMP>();
+                var size = Marshal.SizeOf<RawXmp>();
                 bytes = new byte[size];
                 ptr = Marshal.AllocHGlobal(size);
-                Marshal.StructureToPtr(rawXMP, ptr, true);
+                Marshal.StructureToPtr(rawXmp, ptr, true);
                 Marshal.Copy(ptr, bytes, 0, bytes.Length);
             }
             catch (Exception e)
@@ -242,7 +242,7 @@ namespace DDR4XMPEditor.DDR4SPD
             var handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
             XMP xmp = new XMP
             {
-                rawXMP = Marshal.PtrToStructure<RawXMP>(handle.AddrOfPinnedObject())
+                rawXmp = Marshal.PtrToStructure<RawXmp>(handle.AddrOfPinnedObject())
             };
             handle.Free();
             return xmp;
