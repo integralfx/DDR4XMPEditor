@@ -8,6 +8,80 @@ namespace DDR4XMPEditor.DDR4SPD
 {
     public class SPD : PropertyChangedBase
     {
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private unsafe struct RawSPD
+        {
+            public byte bytesUsed;
+            public byte revision;
+            public byte memoryType; // 12 = DDR4
+            public byte moduleType; // 2 = Unbuffered DIMM, 3 = SO-DIMM, 11=LRDIMM
+            public byte banks;
+            public byte rowColAddress;
+            public byte primaryPackageType;
+            public byte optionalFeatures;
+            public byte thermalRefreshOptions;
+            public byte otherOptionalFeatures;
+            public byte secondaryPackageType;
+            public byte voltage;
+            public byte organisation;
+            public byte busWidth;
+            public byte thermalSensor;
+            public fixed byte unknown2[0x10 - 0x0F + 1];
+            public byte timebase;   // [0:1]: FTB, [2:3]: MTB
+            public byte minCycleTime;
+            public byte maxCycleTime;
+            public fixed byte clSupported[4]; // 0: 7-14, 1: 15-22, 2: 23-30, 3: 31-36
+            public byte clTicks;
+            public byte rcdTicks;
+            public byte rpTicks;
+            public byte rasRCUpperNibble; // [0:3]: tRAS upper nibble, [4:7]: tRC upper nibble
+            public byte rasTicks;
+            public byte rcTicks;
+            public byte rfc1LsbTicks;
+            public byte rfc1MsbTicks;
+            public byte rfc2LsbTicks;
+            public byte rfc2MsbTicks;
+            public byte rfc4LsbTicks;
+            public byte rfc4MsbTicks;
+            public byte fawUpperNibble; // [0:3] tFAW upper nibble
+            public byte fawTicks;
+            public byte rrdsTicks;
+            public byte rrdlTicks;
+            public byte ccdlTicks;
+            public byte wrUpperNibble;
+            public byte wrTicks;
+            public byte wtrUpperNibble;
+            public byte wtrsTicks;
+            public byte wtrlTicks;
+            public fixed byte unknown3[0x74 - 0x2E + 1];
+            public sbyte ccdlFc;
+            public sbyte rrdlFc;
+            public sbyte rrdsFc;
+            public sbyte rcFc;
+            public sbyte rpFc;
+            public sbyte rcdFc;
+            public sbyte clFc;
+            public sbyte maxCycleTimeFc;
+            public sbyte minCycleTimeFc;
+            public byte crcLsb;
+            public byte crcMsb;
+            // Module specific section
+            public fixed byte unknown4[0xFD - 0x80 + 1];
+            public byte mspCrcLsb;
+            public byte mspCrcMsb;
+            public fixed byte unknown5[0x13F - 0x100 + 1];
+            public fixed byte manufacturer[2];
+            public byte manufacturingLocation;
+            public byte manufacturingYear;
+            public byte manufacturingWeek;
+            public fixed byte serialNumber[0x148 - 0x145 + 1];
+            public fixed byte partNumber[0x15C - 0x149 + 1];
+            public byte revisionCode;
+            public fixed byte manufacturerIdCode[2];
+            public byte dramStepping;
+            public fixed byte unknown6[0x17F - 0x161 + 1];
+        }
+
         public enum Densities
         {
             _256Mb,
@@ -24,17 +98,13 @@ namespace DDR4XMPEditor.DDR4SPD
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        struct XMPHeader
+        private unsafe struct XMPHeader
         {
             public byte magic1;
             public byte magic2;
             public byte profileEnabled; // bit 0: profile 1 enabled, bit 1: profile 2 enabled
             public byte version;
-            public byte unknown1;
-            public byte unknown2;
-            public byte unknown3;
-            public byte unknown4;
-            public byte reserved;
+            public fixed byte unknown[5];
         };
 
         public static readonly byte[] HeaderMagic = { 0x0C, 0x4A };
@@ -42,8 +112,9 @@ namespace DDR4XMPEditor.DDR4SPD
         public static readonly byte Version = 0x20;
         public const int TotalSize = 512;
         public const int SpdSize = 0x180;
+        public const int MTBps = 125;  // Medium timebase in picoseconds
 
-        private byte[] rawSpd = new byte[SpdSize];
+        private RawSPD rawSPD;
         private XMPHeader xmpHeader;
         private readonly XMP[] xmp = new XMP[2];
 
@@ -67,11 +138,213 @@ namespace DDR4XMPEditor.DDR4SPD
         private static readonly int[] deviceWidthMap = new int[8] { 4, 8, 16, 32, -1, -1, -1, -1 };
         private static readonly int[] packageRanksMap = new int[8] { 1, 2, 3, 4, 5, 6, 7, 8 };
 
+        public byte MinCycleTime
+        {
+            get => rawSPD.minCycleTime;
+            set => rawSPD.minCycleTime = value;
+        }
+
+        public byte MaxCycleTime
+        {
+            get => rawSPD.maxCycleTime;
+            set => rawSPD.maxCycleTime = value;
+        }
+
+        public unsafe byte[] GetClSupported()
+        {
+            return new byte[] { rawSPD.clSupported[0], rawSPD.clSupported[1], rawSPD.clSupported[2] };
+        }
+
+        public unsafe void SetClSupported(int index, byte value)
+        {
+            rawSPD.clSupported[index] = value;
+        }
+
+        public byte CLTicks
+        {
+            get => rawSPD.clTicks;
+            set => rawSPD.clTicks = value;
+        }
+
+        public byte RCDTicks
+        {
+            get => rawSPD.rcdTicks;
+            set => rawSPD.rcdTicks = value;
+        }
+
+        public byte RPTicks
+        {
+            get => rawSPD.rpTicks;
+            set => rawSPD.rpTicks = value;
+        }
+
+        public int RASTicks
+        {
+            get => ((rawSPD.rasRCUpperNibble & 0xF) << 8) | rawSPD.rasTicks;
+            set
+            {
+                rawSPD.rasRCUpperNibble = (byte)((rawSPD.rasRCUpperNibble & 0xF0) | ((value >> 8) & 0xF));
+                rawSPD.rasTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public int RCTicks
+        {
+            get => ((rawSPD.rasRCUpperNibble & 0xF0) << 4) | rawSPD.rcTicks;
+            set
+            {
+                rawSPD.rasRCUpperNibble = (byte)(((value & 0xF00) >> 4) | (rawSPD.rasRCUpperNibble & 0xF));
+                rawSPD.rcTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public ushort RFC1Ticks
+        {
+            get => (ushort)((rawSPD.rfc1MsbTicks << 8) | rawSPD.rfc1LsbTicks);
+            set
+            {
+                rawSPD.rfc1MsbTicks = (byte)(value >> 8);
+                rawSPD.rfc1LsbTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public ushort RFC2Ticks
+        {
+            get => (ushort)((rawSPD.rfc2MsbTicks << 8) | rawSPD.rfc2LsbTicks);
+            set
+            {
+                rawSPD.rfc2MsbTicks = (byte)(value >> 8);
+                rawSPD.rfc2LsbTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public ushort RFC4Ticks
+        {
+            get => (ushort)((rawSPD.rfc4MsbTicks << 8) | rawSPD.rfc4LsbTicks);
+            set
+            {
+                rawSPD.rfc4MsbTicks = (byte)(value >> 8);
+                rawSPD.rfc4LsbTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public int FAWTicks
+        {
+            get => ((rawSPD.fawUpperNibble & 0xF) << 8) | rawSPD.fawTicks;
+            set
+            {
+                rawSPD.fawUpperNibble = (byte)(rawSPD.fawUpperNibble & 0xF0 | value >> 8 & 0xF);
+                rawSPD.fawTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public byte RRDSTicks
+        {
+            get => rawSPD.rrdsTicks;
+            set => rawSPD.rrdsTicks = value;
+        }
+
+        public byte RRDLTicks
+        {
+            get => rawSPD.rrdlTicks;
+            set => rawSPD.rrdlTicks = value;
+        }
+
+        public byte CCDLTicks
+        {
+            get => rawSPD.ccdlTicks;
+            set => rawSPD.ccdlTicks = value;
+        }
+
+        public ushort WRTicks
+        {
+            get => (ushort)(((rawSPD.wrUpperNibble & 0xF) << 16) | rawSPD.wrTicks);
+            set
+            {
+                rawSPD.wrUpperNibble = (byte)((value >> 16) & 0xF);
+                rawSPD.wrTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public ushort WTRSTicks
+        {
+            get => (ushort)(((rawSPD.wtrUpperNibble & 0xF) << 16) | rawSPD.wtrsTicks);
+            set
+            {
+                rawSPD.wtrUpperNibble = (byte)((value >> 16) & 0xF);
+                rawSPD.wtrsTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public ushort WTRLTicks
+        {
+            get => (ushort)(((rawSPD.wtrUpperNibble & 0xF) << 16) | rawSPD.wtrlTicks);
+            set
+            {
+                rawSPD.wtrUpperNibble = (byte)((value >> 16) & 0xF);
+                rawSPD.wtrlTicks = (byte)(value & 0xFF);
+            }
+        }
+
+        public sbyte CCDLFC
+        {
+            get => rawSPD.ccdlFc;
+            set => rawSPD.ccdlFc = value;
+        }
+
+        public sbyte RRDLFC
+        {
+            get => rawSPD.rrdlFc;
+            set => rawSPD.rrdlFc = value;
+        }
+
+        public sbyte RRDSFC
+        {
+            get => rawSPD.rrdsFc;
+            set => rawSPD.rrdsFc = value;
+        }
+
+        public sbyte RCFC
+        {
+            get => rawSPD.rcFc;
+            set => rawSPD.rcFc = value;
+        }
+
+        public sbyte RPFC
+        {
+            get => rawSPD.rpFc;
+            set => rawSPD.rpFc = value;
+        }
+
+        public sbyte RCDFC
+        {
+            get => rawSPD.rcdFc;
+            set => rawSPD.rcdFc = value;
+        }
+
+        public sbyte CLFC
+        {
+            get => rawSPD.clFc;
+            set => rawSPD.clFc = value;
+        }
+
+        public sbyte MinCycleTimeFC
+        {
+            get => rawSPD.minCycleTimeFc;
+            set => SetAndNotify(ref rawSPD.minCycleTimeFc, value);
+        }
+
+        public sbyte MaxCycleTimeFC
+        {
+            get => rawSPD.maxCycleTimeFc;
+            set => SetAndNotify(ref rawSPD.maxCycleTimeFc, value);
+        }
+
         public Densities? Density
         {
             get
             {
-                int index = rawSpd[4] & 0xF;
+                int index = rawSPD.banks & 0xF;
                 if (index >= (int)Densities.Count)
                 {
                     return null;
@@ -83,85 +356,85 @@ namespace DDR4XMPEditor.DDR4SPD
                 if (value.HasValue)
                 {
                     int index = Array.FindIndex(densityMap, d => d == value.Value);
-                    rawSpd[4] = (byte)((rawSpd[4] & 0xF0) | (index & 0xF));
+                    rawSPD.banks = (byte)((rawSPD.banks & 0xF0) | (index & 0xF));
                 }
             }
         }
 
         public int Banks
         {
-            get => bankAddressBitsMap[(rawSpd[4] >> 4) & 0x3];
+            get => bankAddressBitsMap[(rawSPD.banks >> 4) & 0x3];
             set
             {
                 int index = Array.IndexOf(bankAddressBitsMap, value);
                 if (index != -1 && value != -1)
                 {
-                    rawSpd[4] = (byte)((rawSpd[4] & 0xC0) | (index << 4) | (rawSpd[4] & 0xF));
+                    rawSPD.banks = (byte)((rawSPD.banks & 0xC0) | (index << 4) | (rawSPD.banks & 0xF));
                 }
             }
         }
 
         public int BankGroups
         {
-            get => bankGroupBitsMap[(rawSpd[4] >> 6) & 0x3];
+            get => bankGroupBitsMap[(rawSPD.banks >> 6) & 0x3];
             set
             {
                 int index = Array.IndexOf(bankGroupBitsMap, value);
                 if (index != -1 && value != -1)
                 {
-                    rawSpd[4] = (byte)((index << 6) | (rawSpd[4] & 0x3F));
+                    rawSPD.banks = (byte)((index << 6) | (rawSPD.banks & 0x3F));
                 }
             }
         }
 
         public int ColumnAddresses
         {
-            get => columnAddressBitsMap[rawSpd[5] & 0x7];
+            get => columnAddressBitsMap[rawSPD.rowColAddress & 0x7];
             set
             {
                 int index = Array.IndexOf(columnAddressBitsMap, value);
                 if (index != -1 && value != -1)
                 {
-                    rawSpd[5] = (byte)((rawSpd[5] & 0xF8) | (index & 0x7));
+                    rawSPD.rowColAddress = (byte)((rawSPD.rowColAddress & 0xF8) | (index & 0x7));
                 }
             }
         }
 
         public int RowAddresses
         {
-            get => rowAddressBitsMap[(rawSpd[5] >> 3) & 0x7];
+            get => rowAddressBitsMap[(rawSPD.rowColAddress >> 3) & 0x7];
             set
             {
                 int index = Array.IndexOf(rowAddressBitsMap, value);
                 if (index != -1 && value != -1)
                 {
-                    rawSpd[5] = (byte)((rawSpd[5] & 0xC0) | (index << 3) | (rawSpd[5] & 0x7));
+                    rawSPD.rowColAddress = (byte)((rawSPD.rowColAddress & 0xC0) | (index << 3) | (rawSPD.rowColAddress & 0x7));
                 }
             }
         }
 
         public int DeviceWidth
         {
-            get => deviceWidthMap[rawSpd[0xC] & 0b111];
+            get => deviceWidthMap[rawSPD.organisation & 0b111];
             set
             {
                 int index = Array.IndexOf(deviceWidthMap, value);
                 if (index != -1 && value != -1)
                 {
-                    rawSpd[0xC] = (byte)((rawSpd[0xC] & 0b11111000) | index);
+                    rawSPD.organisation = (byte)((rawSPD.organisation & 0b11111000) | index);
                 }
             }
         }
 
         public int PackageRanks
         {
-            get => packageRanksMap[(rawSpd[0xC] >> 3) & 0b111];
+            get => packageRanksMap[(rawSPD.organisation >> 3) & 0b111];
             set
             {
                 int index = Array.IndexOf(packageRanksMap, value);
                 if (index != -1 && value != -1)
                 {
-                    rawSpd[0xC] = (byte)((rawSpd[0xC] & 0b11000000) | (index << 3) | (rawSpd[0xC] & 0b111));
+                    rawSPD.organisation = (byte)((rawSPD.organisation & 0b11000000) | (index << 3) | (rawSPD.organisation & 0b111));
                 }
             }
         }
@@ -171,36 +444,36 @@ namespace DDR4XMPEditor.DDR4SPD
         /// </summary>
         public bool RankMix
         {
-            get => (rawSpd[0xC] & 0b01000000) == 0b01000000;
+            get => (rawSPD.organisation & 0b01000000) == 0b01000000;
             set
             {
                 if (value)
                 {
-                    rawSpd[0xC] |= 0b01000000;
+                    rawSPD.organisation |= 0b01000000;
                 }
                 else
                 {
-                    rawSpd[0xC] &= 0b10111111;
+                    rawSPD.organisation &= 0b10111111;
                 }
             }
         }
 
         public ushort CRC1
         {
-            get => (ushort)((rawSpd[0x7F] << 8) | (rawSpd[0x7E]));
+            get => (ushort)((rawSPD.crcMsb << 8) | rawSPD.crcLsb);
             set
             {
-                rawSpd[0x7E] = (byte)(value & 0xFF);
-                rawSpd[0x7F] = (byte)((value >> 8) & 0xFF);
+                rawSPD.crcLsb = (byte)(value & 0xFF);
+                rawSPD.crcMsb = (byte)((value >> 8) & 0xFF);
             }
         }
         public ushort CRC2
         {
-            get => (ushort)((rawSpd[0xFF] << 8) | (rawSpd[0xFE]));
+            get => (ushort)((rawSPD.mspCrcMsb << 8) | (rawSPD.mspCrcLsb));
             set
             {
-                rawSpd[0xFE] = (byte)(value & 0xFF);
-                rawSpd[0xFF] = (byte)((value >> 8) & 0xFF);
+                rawSPD.mspCrcLsb = (byte)(value & 0xFF);
+                rawSPD.mspCrcMsb = (byte)((value >> 8) & 0xFF);
             }
         }
 
@@ -235,13 +508,11 @@ namespace DDR4XMPEditor.DDR4SPD
                 }
             }
         }
-
         public XMP XMP1
         {
             get => xmp[0];
             set => xmp[0] = value;
         }
-        
         public XMP XMP2
         {
             get => xmp[1];
@@ -250,19 +521,38 @@ namespace DDR4XMPEditor.DDR4SPD
 
         public void UpdateCrc()
         {
-            CRC1 = Crc16(rawSpd.Take(0x7D + 1).ToArray());
-            CRC2 = Crc16(rawSpd.Skip(0x80).Take(0xFD - 0x80 + 1).ToArray());
+            var rawSpdBytes = GetBytes();
+            CRC1 = Crc16(rawSpdBytes.Take(0x7D + 1).ToArray());
+            CRC2 = Crc16(rawSpdBytes.Skip(0x80).Take(0xFD - 0x80 + 1).ToArray());
         }
 
         public byte[] GetBytes()
         {
             int startIndex = 0;
             byte[] bytes = new byte[TotalSize];
-            Array.Copy(rawSpd, bytes, rawSpd.Length);
-            startIndex += rawSpd.Length;
+
+            // Convert raw SPD to byte array.
+            IntPtr ptr = IntPtr.Zero;
+            try
+            {
+                int rawSpdSize = Marshal.SizeOf<RawSPD>();
+                ptr = Marshal.AllocHGlobal(rawSpdSize);
+                Marshal.StructureToPtr(rawSPD, ptr, true);
+                Marshal.Copy(ptr, bytes, startIndex, rawSpdSize);
+                startIndex += rawSpdSize;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Failed to save SPD data", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(ptr);
+            }
 
             // Convert header to byte array.
-            IntPtr ptr = IntPtr.Zero;
+            ptr = IntPtr.Zero;
             try
             {
                 int headerSize = Marshal.SizeOf<XMPHeader>();
@@ -273,7 +563,7 @@ namespace DDR4XMPEditor.DDR4SPD
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(e.Message, "Failed to save XMP header", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
             finally
@@ -306,13 +596,16 @@ namespace DDR4XMPEditor.DDR4SPD
                 // Check the magic constants.
                 if (headerMagic.SequenceEqual(HeaderMagic) || headerMagic.SequenceEqual(HeaderMagic0))
                 {
-                    SPD spd = new SPD
-                    {
-                        rawSpd = bytes.Take(SpdSize).ToArray()
-                    };
+                    var rawSpdBytes = bytes.Take(SpdSize).ToArray();
+                    SPD spd = new SPD();
 
-                    // Read the header.
-                    var handle = GCHandle.Alloc(xmpBytes, GCHandleType.Pinned);
+                    // Read into RawSpd struct.
+                    var handle = GCHandle.Alloc(rawSpdBytes, GCHandleType.Pinned);
+                    spd.rawSPD = Marshal.PtrToStructure<RawSPD>(handle.AddrOfPinnedObject());
+                    handle.Free();
+
+                    // Read the XMP header.
+                    handle = GCHandle.Alloc(xmpBytes, GCHandleType.Pinned);
                     spd.xmpHeader = Marshal.PtrToStructure<XMPHeader>(handle.AddrOfPinnedObject());
                     handle.Free();
 
@@ -342,6 +635,70 @@ namespace DDR4XMPEditor.DDR4SPD
             }
 
             return null;
+        }
+
+        public static bool IsCLSupported(byte[] clSupported, int cl)
+        {
+            int[] mask = { 1, 2, 4, 8, 16, 32, 64, 128 };
+            if (cl >= 7 && cl <= 14)
+            {
+                return (clSupported[0] & mask[cl - 7]) == mask[cl - 7];
+            }
+            else if (cl >= 15 && cl <= 22)
+            {
+                return (clSupported[1] & mask[cl - 15]) == mask[cl - 15];
+            }
+            else if (cl >= 23 && cl <= 30)
+            {
+                return (clSupported[2] & mask[cl - 23]) == mask[cl - 23];
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static void SetCLSupported(byte[] clSupported, int cl, bool supported)
+        {
+            if (cl < 7 || cl > 30)
+            {
+                return;
+            }
+
+            int[] mask = { 1, 2, 4, 8, 16, 32, 64, 128 };
+            if (cl >= 7 && cl <= 14)
+            {
+                if (supported)
+                {
+                    clSupported[0] |= (byte)mask[cl - 7];
+                }
+                else
+                {
+                    clSupported[0] &= (byte)~mask[cl - 7];
+                }
+            }
+            else if (cl >= 15 && cl <= 22)
+            {
+                if (supported)
+                {
+                    clSupported[1] |= (byte)mask[cl - 15];
+                }
+                else
+                {
+                    clSupported[1] &= (byte)~mask[cl - 15];
+                }
+            }
+            else if (cl >= 23 && cl <= 30)
+            {
+                if (supported)
+                {
+                    clSupported[2] |= (byte)mask[cl - 23];
+                }
+                else
+                {
+                    clSupported[2] &= (byte)~mask[cl - 23];
+                }
+            }
         }
 
         private void ParseXMP(byte[] bytes)

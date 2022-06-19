@@ -8,56 +8,38 @@ namespace DDR4XMPEditor.DDR4SPD
     public class XMP : PropertyChangedBase
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        struct RawXMP
+        private unsafe struct RawXMP
         {
             public byte voltage;
-            public byte unknown1;
-            public byte unknown2;
+            public fixed byte unknown1[2];
             public byte sdramCycleTicks;
-            public byte clSupported1, // 7 - 14
-                        clSupported2, // 15 - 22
-                        clSupported3; // 23 - 30
-            public byte unknown3;
+            public fixed byte clSupported[3]; // 0: 7-14, 1: 15-22, 2: 23-30
+            public byte unknown2;
             public byte clTicks;
             public byte rcdTicks;
             public byte rpTicks;
             public byte rasRCUpperNibble; // [0:3]: tRAS upper nibble, [4:7]: tRC upper nibble
             public byte rasTicks;
             public byte rcTicks;
-            public ushort rfcTicks;
+            public ushort rfc1Ticks;
             public ushort rfc2Ticks;
             public ushort rfc4Ticks;
             public byte fawUpperNibble; // [0:3] tFAW upper nibble
             public byte fawTicks;
             public byte rrdsTicks;
             public byte rrdlTicks;
-            public byte unknown4;
-            public byte unknown5;
-            public byte unknown6;
-            public byte unknown7;
-            public byte unknown8;
-            public byte unknown9;
-            public byte unknown10;
-            public byte unknown11;
-            public sbyte rrdlFC;
-            public sbyte rrdsFC;
-            public sbyte rcFC;
-            public sbyte rpFC;
-            public sbyte rcdFC;
-            public sbyte clFC;
-            public sbyte sdramCycleTimeFC;
-            public byte unknown12;
-            public byte unknown13;
-            public byte unknown14;
-            public byte unknown15;
-            public byte unknown16;
-            public byte unknown17;
-            public byte unknown18;
-            public byte unknown19;
+            public fixed byte unknown3[8];
+            public sbyte rrdlFc;
+            public sbyte rrdsFc;
+            public sbyte rcFc;
+            public sbyte rpFc;
+            public sbyte rcdFc;
+            public sbyte clFc;
+            public sbyte sdramCycleTimeFc;
+            public fixed byte unknown4[8];
         }
-        
+
         public const int Size = 0x2F;
-        public const int MTBps = 125;  // Medium timebase in picoseconds
         private RawXMP rawXMP;
 
         /// <summary>
@@ -91,70 +73,14 @@ namespace DDR4XMPEditor.DDR4SPD
             set => rawXMP.sdramCycleTicks = value;
         }
 
-        public bool IsCLSupported(int cl)
+        public unsafe byte[] GetClSupported()
         {
-            int[] mask = { 1, 2, 4, 8, 16, 32, 64, 128 };
-            if (cl >= 7 && cl <= 14)
-            {
-                return (rawXMP.clSupported1 & mask[cl - 7]) == mask[cl - 7];
-            }
-            else if (cl >= 15 && cl <= 22)
-            {
-                return (rawXMP.clSupported2 & mask[cl - 15]) == mask[cl - 15];
-            }
-            else if (cl >= 23 && cl <= 30)
-            {
-                return (rawXMP.clSupported3 & mask[cl - 23]) == mask[cl - 23];
-            }
-            else
-            {
-                return false;
-            }
+            return new byte[] { rawXMP.clSupported[0], rawXMP.clSupported[1], rawXMP.clSupported[2] };
         }
 
-        public bool SetCLSupported(int cl, bool supported)
+        public unsafe void SetClSupported(int index, byte value)
         {
-            if (cl < 7 || cl > 30)
-            {
-                return false;
-            }
-
-            int[] mask = { 1, 2, 4, 8, 16, 32, 64, 128 };
-            if (cl >= 7 && cl <= 14)
-            {
-                if (supported)
-                {
-                    rawXMP.clSupported1 |= (byte)mask[cl - 7];
-                }
-                else
-                {
-                    rawXMP.clSupported1 &= (byte)~mask[cl - 7];
-                }
-            }
-            else if (cl >= 15 && cl <= 22)
-            {
-                if (supported)
-                {
-                    rawXMP.clSupported2 |= (byte)mask[cl - 15];
-                }
-                else
-                {
-                    rawXMP.clSupported2 &= (byte)~mask[cl - 15];
-                }
-            }
-            else if (cl >= 23 && cl <= 30)
-            {
-                if (supported)
-                {
-                    rawXMP.clSupported3 |= (byte)mask[cl - 23];
-                }
-                else
-                {
-                    rawXMP.clSupported3 &= (byte)~mask[cl - 23];
-                }
-            }
-
-            return true;
+            rawXMP.clSupported[index] = value;
         }
 
         public byte CLTicks
@@ -177,7 +103,7 @@ namespace DDR4XMPEditor.DDR4SPD
 
         public int RASTicks
         {
-            get => (rawXMP.rasRCUpperNibble & 0xF << 8) | rawXMP.rasTicks;
+            get => ((rawXMP.rasRCUpperNibble & 0xF) << 8) | rawXMP.rasTicks;
             set
             {
                 rawXMP.rasRCUpperNibble = (byte)((rawXMP.rasRCUpperNibble & 0xF0) | (value >> 8 & 0xF));
@@ -195,10 +121,10 @@ namespace DDR4XMPEditor.DDR4SPD
             }
         }
 
-        public ushort RFCTicks
+        public ushort RFC1Ticks
         {
-            get => rawXMP.rfcTicks;
-            set => rawXMP.rfcTicks = value;
+            get => rawXMP.rfc1Ticks;
+            set => rawXMP.rfc1Ticks = value;
         }
 
         public ushort RFC2Ticks
@@ -237,44 +163,44 @@ namespace DDR4XMPEditor.DDR4SPD
 
         public sbyte RRDLFC
         {
-            get => rawXMP.rrdlFC;
-            set => rawXMP.rrdlFC = value;
+            get => rawXMP.rrdlFc;
+            set => rawXMP.rrdlFc = value;
         }
 
         public sbyte RRDSFC
         {
-            get => rawXMP.rrdsFC;
-            set => rawXMP.rrdsFC = value;
+            get => rawXMP.rrdsFc;
+            set => rawXMP.rrdsFc = value;
         }
 
         public sbyte RCFC
         {
-            get => rawXMP.rcFC;
-            set => rawXMP.rcFC = value;
+            get => rawXMP.rcFc;
+            set => rawXMP.rcFc = value;
         }
 
         public sbyte RPFC
         {
-            get => rawXMP.rpFC;
-            set => rawXMP.rpFC = value;
+            get => rawXMP.rpFc;
+            set => rawXMP.rpFc = value;
         }
 
         public sbyte RCDFC
         {
-            get => rawXMP.rcdFC;
-            set => rawXMP.rcdFC = value;
+            get => rawXMP.rcdFc;
+            set => rawXMP.rcdFc = value;
         }
 
         public sbyte CLFC
         {
-            get => rawXMP.clFC;
-            set => rawXMP.clFC = value;
+            get => rawXMP.clFc;
+            set => rawXMP.clFc = value;
         }
 
         public sbyte SDRAMCycleTimeFC
         {
-            get => rawXMP.sdramCycleTimeFC;
-            set => SetAndNotify(ref rawXMP.sdramCycleTimeFC, value);
+            get => rawXMP.sdramCycleTimeFc;
+            set => SetAndNotify(ref rawXMP.sdramCycleTimeFc, value);
         }
 
         public byte[] GetBytes()
