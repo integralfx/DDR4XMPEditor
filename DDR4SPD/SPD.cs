@@ -8,6 +8,21 @@ namespace DDR4XMPEditor.DDR4SPD
 {
     public class SPD : PropertyChangedBase
     {
+        public enum Densities
+        {
+            _256Mb,
+            _512Mb,
+            _1Gb,
+            _2Gb,
+            _4Gb,
+            _8Gb,
+            _16Gb,
+            _32Gb,
+            _12Gb,
+            _24Gb,
+            Count
+        }
+
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private unsafe struct RawSPD
         {
@@ -80,21 +95,6 @@ namespace DDR4XMPEditor.DDR4SPD
             public fixed byte manufacturerIdCode[2];
             public byte dramStepping;
             public fixed byte unknown6[0x17F - 0x161 + 1];
-        }
-
-        public enum Densities
-        {
-            _256Mb,
-            _512Mb,
-            _1Gb,
-            _2Gb,
-            _4Gb,
-            _8Gb,
-            _16Gb,
-            _32Gb,
-            _12Gb,
-            _24Gb,
-            Count
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
