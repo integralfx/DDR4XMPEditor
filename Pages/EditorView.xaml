@@ -3,9 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:DDR4XMPEditor.Pages"
-      mc:Ignorable="d" 
-      d:DesignHeight="650" d:DesignWidth="360">
+      mc:Ignorable="d" MinWidth="360" MinHeight="700">
 
     <StackPanel IsEnabled="{Binding IsSPDValid}">
         <Grid>
@@ -18,11 +16,11 @@
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
-                <Label Content="Profile 1 enabled:"/>
+                <Label Content="XMP 1 enabled:"/>
                 <CheckBox Margin="0,5,0,0" IsChecked="{Binding SPD.XMP1Enabled}"/>
             </StackPanel>
             <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
-                <Label Content="Profile 2 enabled:"/>
+                <Label Content="XMP 2 enabled:"/>
                 <CheckBox Margin="0,5,0,0" IsChecked="{Binding SPD.XMP2Enabled}"/>
             </StackPanel>
             <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
