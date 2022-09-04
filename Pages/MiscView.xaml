@@ -72,5 +72,28 @@
                           SelectedValue="{Binding SelectedRankMix}"/>
             </Grid>
         </GroupBox>
+
+        <GroupBox Header="Module Info">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="Manufacturing Year:"/>
+                <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" Value="{Binding SPD.ManufacturingYear}" Minimum="0" Maximum="99" TextAlignment="Left"/>
+                
+                <Label Grid.Row="1" Grid.Column="0" Content="Manufacturing Week:"/>
+                <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Value="{Binding SPD.ManufacturingWeek}" Minimum="0" Maximum="52" TextAlignment="Left"/>
+
+                <Label Grid.Row="2" Grid.Column="0" Content="Part Number:"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SPD.PartNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="20"/>
+            </Grid>
+        </GroupBox>
     </StackPanel>
 </UserControl>

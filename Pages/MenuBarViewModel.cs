@@ -8,8 +8,7 @@ namespace DDR4XMPEditor.Pages
     public class MenuBarViewModel : Screen
     {
         private IEventAggregator eventAggregator;
-        private string lastOpenDirectory = Directory.GetCurrentDirectory(),
-                       lastSaveDirectory = Directory.GetCurrentDirectory();
+        private string lastOpenDirectory = Directory.GetCurrentDirectory();
 
         public MenuBarViewModel(IEventAggregator aggregator)
         {
@@ -29,7 +28,7 @@ namespace DDR4XMPEditor.Pages
             {
                 lastOpenDirectory = ofd.FileName;
                 eventAggregator.Publish(new SelectedSPDFileEvent 
-                { 
+                {
                     FilePath = ofd.FileName,
                     SPD = DDR4SPD.SPD.Parse(File.ReadAllBytes(ofd.FileName))
                 });
@@ -40,14 +39,13 @@ namespace DDR4XMPEditor.Pages
         {
             SaveFileDialog sfd = new SaveFileDialog
             {
-                InitialDirectory = lastSaveDirectory,
+                InitialDirectory = lastOpenDirectory,
                 Filter = "SPD files (*.spd)|*.spd|Binary files (*.bin)|*.bin|All files (*.*)|*.*",
                 RestoreDirectory = true
             };
 
             if (sfd.ShowDialog().Value)
             {
-                lastSaveDirectory = sfd.FileName;
                 eventAggregator.Publish(new SaveSPDFileEvent
                 {
                     FilePath = sfd.FileName
