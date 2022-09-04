@@ -458,6 +458,62 @@ namespace DDR4XMPEditor.DDR4SPD
             }
         }
 
+        public uint ManufacturingYear
+        {
+            get => uint.Parse(rawSPD.manufacturingYear.ToString("X"));   // Year is represented in hex e.g. 0x22 = 2022
+            set
+            {
+                if (value > 99)
+                {
+                    value = 99;
+                }
+
+                rawSPD.manufacturingYear = byte.Parse(value.ToString(), System.Globalization.NumberStyles.HexNumber);
+            }
+        }
+        
+        public uint ManufacturingWeek
+        {
+            get => uint.Parse(rawSPD.manufacturingWeek.ToString("X"));   // Week is represented in hex e.g. 0x10 = Week 10
+            set
+            {
+                // 52 weeks in a year
+                if (value > 52)
+                {
+                    value = 52;
+                }
+
+                rawSPD.manufacturingWeek = byte.Parse(value.ToString(), System.Globalization.NumberStyles.HexNumber);
+            }
+        }
+        
+        public unsafe string PartNumber
+        {
+            get
+            {
+                fixed (byte* p = rawSPD.partNumber)
+                {
+                    return Marshal.PtrToStringAnsi((IntPtr)p);
+                }
+            }
+            set
+            {
+                const int maxSize = 20;
+                var str = value.Substring(0, Math.Min(maxSize, value.Length));
+                fixed (byte* p = rawSPD.partNumber)
+                {
+                    for (int i = 0; i < str.Length; ++i)
+                    {
+                        p[i] = (byte)str[i];
+                    }
+                    for (int i = str.Length; i < maxSize; ++i)
+                    {
+                        p[i] = 0;
+                    }
+                }
+            }
+        }
+
         public ushort CRC1
         {
             get => (ushort)((rawSPD.crcMsb << 8) | rawSPD.crcLsb);
@@ -551,6 +607,13 @@ namespace DDR4XMPEditor.DDR4SPD
                 Marshal.FreeHGlobal(ptr);
             }
 
+            if (XMP1Enabled || XMP2Enabled)
+            {
+                xmpHeader.magic1 = HeaderMagic[0];
+                xmpHeader.magic2 = HeaderMagic[1];
+                xmpHeader.version = Version;
+            }
+
             // Convert header to byte array.
             ptr = IntPtr.Zero;
             try
@@ -608,20 +671,6 @@ namespace DDR4XMPEditor.DDR4SPD
                     handle = GCHandle.Alloc(xmpBytes, GCHandleType.Pinned);
                     spd.xmpHeader = Marshal.PtrToStructure<XMPHeader>(handle.AddrOfPinnedObject());
                     handle.Free();
-
-                    // Write the header magic and version if the SPD didn't come with XMP.
-                    if (spd.xmpHeader.magic1 == 0)
-                    {
-                        spd.xmpHeader.magic1 = HeaderMagic[0];
-                    }
-                    if (spd.xmpHeader.magic2 == 0)
-                    {
-                        spd.xmpHeader.magic2 = HeaderMagic[1];
-                    }
-                    if (spd.xmpHeader.version == 0)
-                    {
-                        spd.xmpHeader.version = Version;
-                    }
 
                     // Parse the XMP profiles (if any).
                     spd.ParseXMP(xmpBytes.Skip(Marshal.SizeOf<XMPHeader>()).ToArray());
